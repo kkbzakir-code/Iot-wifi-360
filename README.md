@@ -1,1 +1,3464 @@
-# Iot-wifi-360
+<!DOCTYPE html>
+<html lang="bn" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IOT WiFi — স্মার্ট ফাইবার ইন্টারনেট ও কাস্টমার অ্যাপ</title>
+    
+    <!-- PWA & Mobile App Capabilities -->
+    <meta name="theme-color" content="#030712">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="IOT WiFi">
+    <link id="pwa-manifest-link" rel="manifest" href="">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23030712'/><path d='M20 45 Q50 18 80 45 M32 58 Q50 40 68 58 M44 71 Q50 64 56 71' stroke='%2300e5ff' stroke-width='8' fill='none' stroke-linecap='round'/><circle cx='50' cy='80' r='5' fill='%2300e5ff'/></svg>">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Hind Siliguri, Plus Jakarta Sans & Orbitron -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Orbitron:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Hind Siliguri"', '"Plus Jakarta Sans"', 'sans-serif'],
+                        display: ['Orbitron', '"Hind Siliguri"', 'sans-serif'],
+                    },
+                    colors: {
+                        space: {
+                            950: '#030712',
+                            900: '#070d1f',
+                            800: '#0b132b',
+                            700: '#132044',
+                        },
+                        cyber: {
+                            blue: '#2563eb',
+                            cyan: '#06b6d4',
+                            glow: '#00e5ff',
+                        }
+                    },
+                    boxShadow: {
+                        'cyber': '0 0 25px rgba(6, 182, 212, 0.25)',
+                        'cyber-strong': '0 0 36px rgba(37, 99, 235, 0.45)',
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        body {
+            background-color: #030712;
+            color: #e2e8f0;
+            font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        input, textarea, select { user-select: text; }
+
+        .cyber-grid {
+            background-image:
+                linear-gradient(to right, rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
+            background-size: 44px 44px;
+        }
+
+        .glass-card {
+            background: rgba(11, 19, 43, 0.88);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(6, 182, 212, 0.22);
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .glass-card:hover { border-color: rgba(0, 229, 255, 0.45); }
+
+        .popular-card {
+            background: linear-gradient(180deg, rgba(19, 36, 78, 0.96) 0%, rgba(7, 13, 31, 0.98) 100%);
+            border: 1.5px solid #00e5ff;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.22);
+        }
+
+        .brand-bkash { background: linear-gradient(135deg, #E2136E 0%, #B80B56 100%); }
+        .brand-nagad { background: linear-gradient(135deg, #ED1C24 0%, #F6921E 100%); }
+        .brand-rocket { background: linear-gradient(135deg, #8C3494 0%, #5B1D61 100%); }
+        .brand-whatsapp { background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); }
+
+        .google-signin-btn {
+            background-color: #ffffff;
+            color: #1f1f1f;
+            border: 1.5px solid #dadce0;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+            transition: all 0.2s ease;
+        }
+        .google-signin-btn:hover {
+            background-color: #f8fafc;
+            border-color: #00e5ff;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 229, 255, 0.25);
+        }
+        .google-signin-btn:active { transform: scale(0.98); }
+
+        /* App Bottom Nav Safe Padding */
+        .app-bottom-safe { padding-bottom: env(safe-area-inset-bottom, 12px); }
+
+        @keyframes pulseRing {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            70% { transform: scale(1.12); opacity: 0; }
+            100% { transform: scale(0.95); opacity: 0; }
+        }
+        .animate-ring { animation: pulseRing 2s infinite; }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #1e3a8a; border-radius: 9999px; }
+    </style>
+</head>
+<body class="cyber-grid min-h-screen flex flex-col relative selection:bg-cyber-glow selection:text-space-950">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed top-18 right-4 z-[95] flex flex-col gap-2 max-w-sm w-full px-3 sm:px-0 pointer-events-none"></div>
+
+    <!-- =========================================================================
+         APP TOP BAR
+    ========================================================================== -->
+    <header class="sticky top-0 z-40 bg-space-950/92 backdrop-blur-xl border-b border-cyber-cyan/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+            <!-- Brand Logo + Secret 5-Tap Admin Trigger -->
+            <div onclick="handleLogoSecretTap()" class="flex items-center gap-2.5 sm:gap-3 cursor-pointer">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyber-blue via-sky-400 to-cyber-glow p-[1.5px] shadow-cyber shrink-0 relative">
+                    <div class="w-full h-full rounded-[10px] bg-space-950 flex items-center justify-center">
+                        <i class="fa-solid fa-wifi text-cyber-glow text-base"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="font-display font-extrabold text-lg sm:text-xl tracking-wider text-white leading-none flex items-center gap-1.5">
+                        IOT <span class="text-cyber-glow">WiFi</span>
+                        <span class="px-1.5 py-0.5 rounded text-[9px] font-sans font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">APP</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 mt-1">
+                        <span id="cloud-status-pill" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-500/10 border border-cyber-cyan/30 text-cyan-300">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Local Vault
+                        </span>
+                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-500/10 text-emerald-300">
+                            <i class="fa-solid fa-shield-halved text-[8px]"></i> SHA-256
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Controls -->
+            <div class="flex items-center gap-2">
+                <!-- Logged-in User Controls -->
+                <div id="header-user-controls" class="hidden items-center gap-2">
+                    <span id="header-user-gmail" class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono bg-space-800 border border-cyber-cyan/30 text-cyan-200 max-w-[200px] truncate"></span>
+                    <button type="button" onclick="logoutCustomer()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 transition">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span class="hidden sm:inline">লগআউট</span>
+                    </button>
+                </div>
+
+                <!-- Admin Gate Button -->
+                <button type="button" onclick="openAdminGate()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-space-800 hover:bg-space-700 border border-cyber-cyan/35 text-cyan-300 transition">
+                    <i class="fa-solid fa-user-shield text-cyber-glow"></i>
+                    <span>Admin</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- =========================================================================
+         1. STRICT LOGIN-FIRST GATEWAY (SECURITY HARDENED)
+    ========================================================================== -->
+    <main id="view-login" class="flex-1 flex items-center justify-center px-4 py-8 sm:py-12">
+        <div class="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <!-- Left App Promo Column -->
+            <div class="lg:col-span-6 space-y-5 text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyber-cyan/10 border border-cyber-cyan/35 text-cyan-300 text-xs font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span>স্মার্ট কাস্টমার অ্যাপ • Encrypted Login</span>
+                </div>
+
+                <h1 class="font-display text-3xl sm:text-5xl font-black text-white leading-tight">
+                    IOT <span class="text-cyber-glow">WiFi</span><br>
+                    <span class="text-xl sm:text-3xl font-sans font-bold text-cyan-200">স্মার্ট ফাইবার ইন্টারনেট অ্যাপ</span>
+                </h1>
+
+                <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-lg mx-auto lg:mx-0">
+                    প্যাকেজ কিনতে, স্পিড টেস্ট করতে এবং <strong>bKash, Nagad বা Rocket</strong>-এ বিল পরিশোধ করতে আপনার <strong>Gmail / Google Account</strong> দিয়ে নিরাপদে প্রবেশ করুন।
+                </p>
+
+                <div class="grid grid-cols-3 gap-2.5 max-w-md mx-auto lg:mx-0 text-left text-xs">
+                    <div class="p-3 rounded-2xl glass-card">
+                        <i class="fa-solid fa-gauge-high text-cyber-glow text-base mb-1"></i>
+                        <p class="font-bold text-white">৫–২০ Mbps</p>
+                        <p class="text-slate-400 text-[10px]">৳১৫০ থেকে শুরু</p>
+                    </div>
+                    <div class="p-3 rounded-2xl glass-card">
+                        <i class="fa-solid fa-shield-halved text-emerald-400 text-base mb-1"></i>
+                        <p class="font-bold text-white">হাই সিকিউরিটি</p>
+                        <p class="text-slate-400 text-[10px]">SHA-256 সুরক্ষিত</p>
+                    </div>
+                    <div class="p-3 rounded-2xl glass-card">
+                        <i class="fa-solid fa-mobile-screen text-cyan-300 text-base mb-1"></i>
+                        <p class="font-bold text-white">অ্যাপ মোড</p>
+                        <p class="text-slate-400 text-[10px]">Android / WebApp</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Login / Registration Card -->
+            <div class="lg:col-span-6">
+                <div class="glass-card rounded-3xl p-5 sm:p-8 border-cyber-cyan/40 max-w-md mx-auto w-full space-y-5 shadow-cyber">
+
+                    <!-- PROMINENT GMAIL / GOOGLE LOGIN BUTTON -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-cyan-300 uppercase tracking-wider">দ্রুত ও নিরাপদ লগইন</span>
+                            <span class="text-[11px] text-emerald-400 font-semibold"><i class="fa-solid fa-lock mr-1"></i>সুরক্ষিত</span>
+                        </div>
+
+                        <button type="button" id="btn-google-gmail-signin" onclick="openGmailQuickModal()" class="google-signin-btn w-full py-3.5 px-4 rounded-2xl flex items-center justify-center gap-3 cursor-pointer">
+                            <svg class="w-6 h-6 shrink-0" viewBox="0 0 48 48" aria-hidden="true">
+                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                            </svg>
+                            <div class="text-left">
+                                <div class="text-xs sm:text-sm font-extrabold text-slate-900 leading-tight">
+                                    Gmail / Google দিয়ে লগইন করুন
+                                </div>
+                                <div class="text-[11px] font-semibold text-slate-600 leading-tight">
+                                    Continue with Gmail / Google
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="relative flex items-center py-0.5">
+                        <div class="flex-grow border-t border-slate-700"></div>
+                        <span class="shrink mx-3 text-[11px] font-semibold text-slate-400">অথবা ইমেইল ও পাসওয়ার্ড দিয়ে</span>
+                        <div class="flex-grow border-t border-slate-700"></div>
+                    </div>
+
+                    <!-- Auth Tabs -->
+                    <div class="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-space-950 border border-slate-800 text-xs font-bold">
+                        <button type="button" id="auth-tab-signin" onclick="switchAuthTab('signin')" class="py-2 rounded-lg bg-cyber-glow text-space-950 transition">
+                            সাইন ইন (Sign In)
+                        </button>
+                        <button type="button" id="auth-tab-register" onclick="switchAuthTab('register')" class="py-2 rounded-lg text-slate-300 hover:text-white transition">
+                            নতুন অ্যাকাউন্ট (Register)
+                        </button>
+                    </div>
+
+                    <!-- Sign In Form -->
+                    <form id="form-signin" onsubmit="handlePasswordSignIn(event)" class="space-y-3.5 text-xs">
+                        <div>
+                            <label class="block text-slate-300 font-semibold mb-1.5">আপনার Gmail / Email <span class="text-rose-400">*</span></label>
+                            <div class="relative">
+                                <i class="fa-solid fa-envelope absolute left-3.5 top-3.5 text-slate-400"></i>
+                                <input type="email" id="signin-email" required placeholder="example@gmail.com" autocomplete="email" class="w-full pl-10 pr-4 py-3 rounded-xl bg-space-950 border border-slate-700 text-white focus:border-cyber-glow focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 font-semibold mb-1.5">পাসওয়ার্ড (Password) <span class="text-rose-400">*</span></label>
+                            <div class="relative">
+                                <i class="fa-solid fa-lock absolute left-3.5 top-3.5 text-slate-400"></i>
+                                <input type="password" id="signin-password" required minlength="6" placeholder="••••••••" autocomplete="current-password" class="w-full pl-10 pr-10 py-3 rounded-xl bg-space-950 border border-slate-700 text-white focus:border-cyber-glow focus:outline-none">
+                                <button type="button" onclick="togglePassVisibility('signin-password')" class="absolute right-3 top-3 text-slate-400 hover:text-white">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 px-4 rounded-xl text-sm font-extrabold bg-gradient-to-r from-cyber-blue to-cyber-glow text-space-950 shadow-cyber-strong hover:brightness-110 transition flex items-center justify-center gap-2">
+                            <span>লগইন করে অ্যাপে প্রবেশ করুন</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <!-- Register Form -->
+                    <form id="form-register" onsubmit="handleNewAccountRegister(event)" class="hidden space-y-3 text-xs">
+                        <div>
+                            <label class="block text-slate-300 font-semibold mb-1">পূর্ণ নাম (Full Name) <span class="text-rose-400">*</span></label>
+                            <input type="text" id="reg-name" required placeholder="আপনার নাম লিখুন" autocomplete="name" class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white focus:border-cyber-glow focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 font-semibold mb-1">আপনার Gmail অ্যাড্রেস <span class="text-rose-400">*</span></label>
+                            <input type="email" id="reg-email" required placeholder="example@gmail.com" autocomplete="email" class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white focus:border-cyber-glow focus:outline-none">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">মোবাইল নম্বর (BD) <span class="text-rose-400">*</span></label>
+                                <input type="tel" id="reg-phone" required pattern="^01[3-9][0-9]{8}$" placeholder="017XXXXXXXX" autocomplete="tel" class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white font-mono focus:border-cyber-glow focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর) <span class="text-rose-400">*</span></label>
+                                <input type="password" id="reg-password" required minlength="6" placeholder="••••••" autocomplete="new-password" class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white focus:border-cyber-glow focus:outline-none">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full py-3 px-4 rounded-xl text-sm font-extrabold bg-gradient-to-r from-emerald-500 to-cyber-glow text-space-950 shadow-cyber hover:brightness-110 transition">
+                            রেজিস্টার করে অ্যাপে যান
+                        </button>
+                    </form>
+
+                    <!-- Support Gmail Quick Info -->
+                    <div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2 text-[11px]">
+                        <div class="truncate">
+                            <span class="text-slate-400">সাপোর্ট: </span>
+                            <a href="mailto:Support.iotwifi.@gmail.com" class="font-mono text-cyan-300 hover:underline">Support.iotwifi.@gmail.com</a>
+                        </div>
+                        <button type="button" onclick="copyText('Support.iotwifi.@gmail.com', 'সাপোর্ট জিমেইল কপি হয়েছে!')" class="px-2.5 py-1 rounded-lg bg-space-800 hover:bg-space-700 text-cyan-200 font-semibold shrink-0">
+                            <i class="fa-regular fa-copy mr-1"></i>Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- =========================================================================
+         2. MAIN CUSTOMER APP VIEW (BOTTOM NAVIGATION + APP TABS)
+    ========================================================================== -->
+    <section id="view-main-panel" class="hidden flex-1 pt-5 pb-28 sm:pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+
+            <!-- 2-Day Expiry Reminder Banner -->
+            <div id="expiry-warning-banner" class="hidden rounded-2xl p-4 border border-amber-400/50 bg-amber-950/60 text-amber-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+                <div class="flex items-start sm:items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
+                        <i class="fa-solid fa-bell text-lg"></i>
+                    </div>
+                    <div>
+                        <p id="expiry-warning-title" class="font-extrabold text-sm text-amber-200">মেয়াদ শেষ হওয়ার সতর্কবার্তা</p>
+                        <p id="expiry-warning-desc" class="text-xs text-amber-100/90 mt-0.5">আপনার ইন্টারনেট প্যাকেজের মেয়াদ শেষ হতে আর মাত্র ২ দিন বাকি আছে।</p>
+                    </div>
+                </div>
+                <button type="button" onclick="document.getElementById('section-packages').scrollIntoView({behavior:'smooth'})" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-amber-400 text-space-950 hover:bg-amber-300 transition shrink-0">
+                    এখনই বিল দিন
+                </button>
+            </div>
+
+            <!-- ISP Subscriber Profile Card & Payment History -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                <div class="lg:col-span-5 bg-white text-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-200/80">
+                    <div class="h-28 bg-[#22252a] relative overflow-hidden">
+                        <svg class="w-full h-full opacity-25" viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 30 H120 L145 55 H260 L285 30 H400" stroke="#94a3b8" stroke-width="2"/>
+                            <path d="M0 75 H90 L115 95 H220 L250 65 H400" stroke="#94a3b8" stroke-width="2"/>
+                            <path d="M60 0 V45 L85 70 V120" stroke="#94a3b8" stroke-width="2"/>
+                            <path d="M310 0 V50 L285 75 V120" stroke="#94a3b8" stroke-width="2"/>
+                            <circle cx="120" cy="30" r="4" fill="#cbd5e1"/>
+                            <circle cx="260" cy="55" r="4" fill="#cbd5e1"/>
+                            <circle cx="220" cy="95" r="4" fill="#cbd5e1"/>
+                            <circle cx="285" cy="75" r="4" fill="#cbd5e1"/>
+                        </svg>
+                        <div class="absolute top-3 right-3 flex items-center gap-1.5">
+                            <span id="panel-status-pill" class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-slate-700/80 text-slate-300 border border-slate-500/40">Inactive</span>
+                            <span id="network-ping-badge" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/55 border border-white/15 text-[10px] font-mono text-cyan-300">
+                                <i class="fa-solid fa-signal text-emerald-400"></i> <span id="live-ping-ms">-- ms</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="px-6 pb-6 relative">
+                        <div class="-mt-14 mb-4 flex items-end justify-between">
+                            <div class="w-24 h-24 rounded-full bg-white p-1.5 shadow-md">
+                                <div class="w-full h-full rounded-full bg-[#cfd8dc] flex items-center justify-center overflow-hidden relative">
+                                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                                        <defs>
+                                            <clipPath id="leftHalfAvatar">
+                                                <rect x="0" y="0" width="50" height="100"/>
+                                            </clipPath>
+                                        </defs>
+                                        <circle cx="50" cy="36" r="17" fill="#b0bec5"/>
+                                        <path d="M20 88 C20 66, 80 66, 80 88 Z" fill="#b0bec5"/>
+                                        <g clip-path="url(#leftHalfAvatar)">
+                                            <circle cx="50" cy="36" r="17" fill="#ffffff"/>
+                                            <path d="M20 88 C20 66, 80 66, 80 88 Z" fill="#ffffff"/>
+                                        </g>
+                                    </svg>
+                                </div>
+                            </div>
+                            <span id="panel-user-gmail" class="font-mono text-[11px] font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg truncate max-w-[190px]"></span>
+                        </div>
+
+                        <div class="space-y-1">
+                            <h1 id="panel-user-name" class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">IOT WiFi গ্রাহক</h1>
+                            <p class="text-sm sm:text-base font-medium text-slate-700 font-mono">ID # <span id="panel-subscriber-id">000000</span></p>
+                            <p class="text-sm sm:text-base text-slate-800 pt-1">
+                                Monthly <strong id="panel-monthly-fee" class="font-extrabold text-slate-950">0 Taka</strong>
+                            </p>
+                            <p class="text-sm sm:text-base text-slate-800">
+                                Package <strong id="panel-package-name" class="font-extrabold text-slate-950">Default service</strong>
+                            </p>
+                        </div>
+
+                        <hr class="my-4 border-slate-200">
+
+                        <div id="user-subscription-box" class="space-y-3 text-sm sm:text-base text-slate-800">
+                            <div class="p-3 rounded-2xl bg-slate-900 text-white border border-slate-700/80">
+                                <div class="flex items-center justify-between text-[11px] text-cyan-300 font-bold mb-1">
+                                    <span><i class="fa-solid fa-stopwatch mr-1 animate-pulse text-emerald-400"></i>লাইভ সময় বাকি (৩০ দিন কাউন্টডাউন)</span>
+                                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px]">LIVE</span>
+                                </div>
+                                <p id="panel-live-countdown-pill" class="font-mono text-xs sm:text-sm font-extrabold text-emerald-300 tracking-tight">No Active Plan</p>
+                            </div>
+                            <div class="grid grid-cols-12 items-start">
+                                <div class="col-span-5">
+                                    <p class="text-slate-600">Valid Till</p>
+                                    <p id="panel-valid-till" class="font-extrabold text-slate-950 mt-0.5">No Active Plan</p>
+                                </div>
+                                <div class="col-span-7 font-extrabold text-slate-950 text-xs sm:text-sm">
+                                    : <span id="panel-remaining-days" class="font-mono text-emerald-700">0</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-12 items-start">
+                                <div class="col-span-5">
+                                    <p class="text-slate-600">Available Balance</p>
+                                    <p class="font-extrabold text-slate-950 mt-0.5">Taka</p>
+                                </div>
+                                <div class="col-span-7 font-extrabold text-slate-950">
+                                    : <span id="panel-available-balance">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 bg-white text-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-200/80">
+                    <div class="bg-[#f1f3f5] px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                        <h2 class="text-base sm:text-lg font-extrabold tracking-wide text-slate-800 uppercase">PAYMENT HISTORY</h2>
+                        <button type="button" onclick="document.getElementById('section-packages').scrollIntoView({behavior:'smooth'})" class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-slate-900 text-white hover:bg-slate-800 transition">
+                            + বিল পেমেন্ট করুন
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-200 bg-white">
+                                    <th class="py-3.5 px-6 text-xs sm:text-sm font-extrabold tracking-wider text-slate-800 uppercase">TRANSACTION ID</th>
+                                    <th class="py-3.5 px-4 text-xs sm:text-sm font-extrabold tracking-wider text-slate-800 uppercase">PACKAGE / AMOUNT</th>
+                                    <th class="py-3.5 px-6 text-xs sm:text-sm font-extrabold tracking-wider text-slate-800 uppercase text-right">STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="home-payment-history-body" class="divide-y divide-slate-200 text-sm text-slate-700">
+                                <tr>
+                                    <td colspan="3" class="py-5 px-6 text-slate-500">No data available in table</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APP TAB 1: PACKAGES & PAYMENT -->
+            <div id="app-tab-home" class="app-tab-view space-y-8">
+                <!-- 5 WiFi Packages Section -->
+                <div id="section-packages" class="space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-cyber-glow">মাসিক ফাইবার প্ল্যান • Monthly Packages</span>
+                            <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-0.5">ইন্টারনেট প্যাকেজসমূহ</h2>
+                        </div>
+                        <p class="text-xs text-slate-400">সব প্যাকেজে আনলিমিটেড ডেটা ও ২৪/৭ সাপোর্ট রয়েছে</p>
+                    </div>
+                    <div id="packages-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"></div>
+                </div>
+
+                <!-- Authentic bKash, Nagad & Rocket Payment Cards -->
+                <div id="section-payments" class="space-y-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-cyber-glow">মোবাইল ব্যাংকিং • Mobile Payment</span>
+                        <h2 class="text-xl sm:text-2xl font-extrabold text-white mt-0.5">পেমেন্ট নম্বর ও অ্যাপ ওপেনার</h2>
+                        <p class="text-xs text-slate-400 mt-1">নম্বর কপি করুন, সরাসরি অ্যাপ বা USSD চালু করুন এবং নিচের ফর্মে TrxID জমা দিন।</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+                        <!-- bKash Card -->
+                        <div class="rounded-2xl overflow-hidden border border-[#E2136E]/50 bg-space-950/95 shadow-lg flex flex-col justify-between">
+                            <div class="brand-bkash p-4 text-white flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow">
+                                        <svg viewBox="0 0 48 48" class="w-6 h-6">
+                                            <polygon points="10,12 28,18 20,28" fill="#E2136E"/>
+                                            <polygon points="28,18 40,14 26,34" fill="#9E0B4B"/>
+                                            <polygon points="20,28 26,34 14,38" fill="#F45B9D"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-extrabold text-lg leading-tight">bKash</h3>
+                                        <p class="text-[11px] text-pink-100">Send Money / Payment</p>
+                                    </div>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-black/25">*247#</span>
+                            </div>
+
+                            <div class="p-4 space-y-3.5">
+                                <div class="p-3 rounded-xl bg-space-900 border border-slate-800 flex items-center justify-between gap-2">
+                                    <div>
+                                        <p class="text-[10px] text-slate-400 uppercase">bKash Number</p>
+                                        <p id="display-bkash-num" class="font-mono font-extrabold text-base sm:text-lg text-white">01324214887</p>
+                                    </div>
+                                    <button type="button" onclick="copyGatewayNumber('bKash')" class="px-3 py-2 rounded-xl text-xs font-bold bg-[#E2136E]/20 hover:bg-[#E2136E]/35 text-pink-200 border border-[#E2136E]/40 transition">
+                                        <i class="fa-regular fa-copy mr-1"></i> কপি
+                                    </button>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button type="button" onclick="launchPaymentApp('bKash')" class="py-2.5 px-3 rounded-xl text-xs font-extrabold brand-bkash text-white hover:brightness-110 transition flex items-center justify-center gap-1.5">
+                                        <i class="fa-solid fa-mobile-screen-button"></i>
+                                        <span>Open bKash</span>
+                                    </button>
+                                    <a href="tel:*247%23" class="py-2.5 px-3 rounded-xl text-xs font-bold bg-space-800 hover:bg-space-700 border border-slate-700 text-slate-200 flex items-center justify-center gap-1.5">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <span>Dial *247#</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nagad Card -->
+                        <div class="rounded-2xl overflow-hidden border border-[#F6921E]/50 bg-space-950/95 shadow-lg flex flex-col justify-between">
+                            <div class="brand-nagad p-4 text-white flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow">
+                                        <svg viewBox="0 0 48 48" class="w-6 h-6">
+                                            <circle cx="24" cy="24" r="16" fill="#ED1C24"/>
+                                            <path d="M18 30 L24 14 L30 30 L24 25 Z" fill="#F6921E"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-extrabold text-lg leading-tight">Nagad</h3>
+                                        <p class="text-[11px] text-orange-100">Send Money / Payment</p>
+                                    </div>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-black/25">*167#</span>
+                            </div>
+
+                            <div class="p-4 space-y-3.5">
+                                <div class="p-3 rounded-xl bg-space-900 border border-slate-800 flex items-center justify-between gap-2">
+                                    <div>
+                                        <p class="text-[10px] text-slate-400 uppercase">Nagad Number</p>
+                                        <p id="display-nagad-num" class="font-mono font-extrabold text-base sm:text-lg text-white">01324214887</p>
+                                    </div>
+                                    <button type="button" onclick="copyGatewayNumber('Nagad')" class="px-3 py-2 rounded-xl text-xs font-bold bg-[#F6921E]/20 hover:bg-[#F6921E]/35 text-orange-200 border border-[#F6921E]/40 transition">
+                                        <i class="fa-regular fa-copy mr-1"></i> কপি
+                                    </button>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button type="button" onclick="launchPaymentApp('Nagad')" class="py-2.5 px-3 rounded-xl text-xs font-extrabold brand-nagad text-white hover:brightness-110 transition flex items-center justify-center gap-1.5">
+                                        <i class="fa-solid fa-mobile-screen-button"></i>
+                                        <span>Open Nagad</span>
+                                    </button>
+                                    <a href="tel:*167%23" class="py-2.5 px-3 rounded-xl text-xs font-bold bg-space-800 hover:bg-space-700 border border-slate-700 text-slate-200 flex items-center justify-center gap-1.5">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <span>Dial *167#</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rocket Card -->
+                        <div class="rounded-2xl overflow-hidden border border-[#8C3494]/60 bg-space-950/95 shadow-lg flex flex-col justify-between">
+                            <div class="brand-rocket p-4 text-white flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow">
+                                        <svg viewBox="0 0 48 48" class="w-6 h-6">
+                                            <path d="M24 8 C31 16, 33 26, 24 38 C15 26, 17 16, 24 8 Z" fill="#8C3494"/>
+                                            <circle cx="24" cy="21" r="4" fill="#ffffff"/>
+                                            <path d="M16 30 L11 36 L19 34 Z" fill="#E2136E"/>
+                                            <path d="M32 30 L37 36 L29 34 Z" fill="#E2136E"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-extrabold text-lg leading-tight">Rocket</h3>
+                                        <p class="text-[11px] text-purple-100">DBBL Mobile Banking</p>
+                                    </div>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-black/25">*322#</span>
+                            </div>
+
+                            <div class="p-4 space-y-3.5">
+                                <div class="p-3 rounded-xl bg-space-900 border border-slate-800 flex items-center justify-between gap-2">
+                                    <div>
+                                        <p class="text-[10px] text-slate-400 uppercase">Rocket Number</p>
+                                        <p id="display-rocket-num" class="font-mono font-extrabold text-base sm:text-lg text-white">013242148879</p>
+                                    </div>
+                                    <button type="button" onclick="copyGatewayNumber('Rocket')" class="px-3 py-2 rounded-xl text-xs font-bold bg-[#8C3494]/25 hover:bg-[#8C3494]/40 text-purple-200 border border-[#8C3494]/50 transition">
+                                        <i class="fa-regular fa-copy mr-1"></i> কপি
+                                    </button>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button type="button" onclick="launchPaymentApp('Rocket')" class="py-2.5 px-3 rounded-xl text-xs font-extrabold brand-rocket text-white hover:brightness-110 transition flex items-center justify-center gap-1.5">
+                                        <i class="fa-solid fa-mobile-screen-button"></i>
+                                        <span>Open Rocket</span>
+                                    </button>
+                                    <a href="tel:*322%23" class="py-2.5 px-3 rounded-xl text-xs font-bold bg-space-800 hover:bg-space-700 border border-slate-700 text-slate-200 flex items-center justify-center gap-1.5">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <span>Dial *322#</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Submission Form -->
+                <div id="section-order-form" class="glass-card rounded-3xl p-5 sm:p-7 border-cyber-cyan/35 space-y-4 max-w-3xl mx-auto">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-cyber-glow">TrxID ভেরিফিকেশন • Submit Payment</span>
+                        <h3 class="text-xl font-extrabold text-white mt-0.5">পেমেন্ট ও অর্ডার জমা দিন</h3>
+                        <p class="text-xs text-slate-400 mt-1">টাকা পাঠানোর পর নিচের তথ্যগুলো পূরণ করে সাবমিট করুন (ফোন নম্বর ১১ ডিজিটের হতে হবে)</p>
+                    </div>
+
+                    <form onsubmit="submitCustomerOrder(event)" class="space-y-3.5 text-xs">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">গ্রাহকের নাম (Customer Name) <span class="text-rose-400">*</span></label>
+                                <input type="text" id="order-customer-name" required placeholder="পূর্ণ নাম" class="w-full px-3.5 py-3 rounded-xl bg-space-950 border border-slate-700 text-white focus:border-cyber-glow focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">যোগাযোগের মোবাইল নম্বর <span class="text-rose-400">*</span></label>
+                                <input type="tel" id="order-contact-phone" required pattern="^01[3-9][0-9]{8}$" placeholder="017XXXXXXXX" class="w-full px-3.5 py-3 rounded-xl bg-space-950 border border-slate-700 text-white font-mono focus:border-cyber-glow focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">প্যাকেজ নির্বাচন করুন <span class="text-rose-400">*</span></label>
+                                <select id="order-package-select" onchange="syncOrderAmount()" class="w-full px-3.5 py-3 rounded-xl bg-space-950 border border-slate-700 text-white focus:border-cyber-glow focus:outline-none"></select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">পেমেন্ট মাধ্যম <span class="text-rose-400">*</span></label>
+                                <select id="order-gateway-select" class="w-full px-3.5 py-3 rounded-xl bg-space-950 border border-slate-700 text-white focus:border-cyber-glow focus:outline-none"></select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">যে নম্বর থেকে টাকা পাঠিয়েছেন <span class="text-rose-400">*</span></label>
+                                <input type="tel" id="order-sender-phone" required pattern="^01[3-9][0-9]{8}$" placeholder="017XXXXXXXX" class="w-full px-3.5 py-3 rounded-xl bg-space-950 border border-slate-700 text-white font-mono focus:border-cyber-glow focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">Transaction ID (TrxID) <span class="text-rose-400">*</span></label>
+                                <input type="text" id="order-trxid" required minlength="6" maxlength="25" placeholder="যেমন: 9XK4M2P8L1" class="w-full px-3.5 py-3 rounded-xl bg-space-950 border border-slate-700 text-white font-mono uppercase focus:border-cyber-glow focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">টাকার পরিমাণ (৳)</label>
+                                <input type="number" id="order-amount" required readonly class="w-full px-3.5 py-3 rounded-xl bg-space-900 border border-slate-700 text-cyber-glow font-extrabold">
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-semibold mb-1">ঠিকানা / এলাকা (ঐচ্ছিক)</label>
+                                <input type="text" id="order-address" placeholder="বাসা/রোড/এলাকা" class="w-full px-3.5 py-3 rounded-xl bg-space-950 border border-slate-700 text-white focus:border-cyber-glow focus:outline-none">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 px-4 rounded-xl text-sm font-extrabold bg-gradient-to-r from-cyber-blue to-cyber-glow text-space-950 shadow-cyber hover:brightness-110 transition">
+                            অর্ডার ও TrxID সাবমিট করুন
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- APP TAB 2: ORDER HISTORY & INVOICES -->
+            <div id="app-tab-orders" class="app-tab-view hidden space-y-5">
+                <div class="glass-card rounded-3xl p-5 sm:p-7 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg sm:text-xl font-extrabold text-white">আমার পেমেন্ট ও রসিদ (Order History)</h2>
+                            <p class="text-xs text-slate-400">যেকোনো এপ্রুভড পেমেন্টের ইনভয়েস দেখতে বা ডাউনলোড করতে ক্লিক করুন</p>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-cyber-cyan/15 text-cyan-300">লাইভ</span>
+                    </div>
+                    <div id="user-orders-list" class="space-y-3 text-xs"></div>
+                </div>
+            </div>
+
+            <!-- APP TAB 3: LIVE SPEED & PING TESTER (APP FEATURE) -->
+            <div id="app-tab-speedtest" class="app-tab-view hidden space-y-5">
+                <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-2xl mx-auto text-center space-y-6 border-cyber-cyan/40">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-cyber-glow">Network Diagnostics • Live Test</span>
+                        <h2 class="text-2xl font-extrabold text-white mt-1">IOT WiFi স্পিড ও পিং টেস্ট</h2>
+                        <p class="text-xs text-slate-400 mt-1">আপনার বর্তমান ইন্টারনেট কানেকশনের স্পিড ও গেমিং ল্যাটেন্সি যাচাই করুন</p>
+                    </div>
+
+                    <!-- Speed Gauge -->
+                    <div class="w-48 h-48 mx-auto rounded-full border-4 border-cyber-cyan/30 bg-space-950/90 flex flex-col items-center justify-center shadow-cyber relative">
+                        <span class="text-[11px] uppercase text-slate-400">Download Speed</span>
+                        <span id="speedtest-mbps" class="font-display text-4xl font-black text-cyber-glow my-1">0.0</span>
+                        <span class="text-xs font-bold text-slate-300">Mbps</span>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3 text-xs">
+                        <div class="p-3 rounded-2xl bg-space-950 border border-slate-800">
+                            <p class="text-slate-400 text-[10px]">Ping (Latency)</p>
+                            <p id="speedtest-ping" class="font-display font-bold text-base text-emerald-400 mt-0.5">-- ms</p>
+                        </div>
+                        <div class="p-3 rounded-2xl bg-space-950 border border-slate-800">
+                            <p class="text-slate-400 text-[10px]">Jitter</p>
+                            <p id="speedtest-jitter" class="font-display font-bold text-base text-cyan-300 mt-0.5">-- ms</p>
+                        </div>
+                        <div class="p-3 rounded-2xl bg-space-950 border border-slate-800">
+                            <p class="text-slate-400 text-[10px]">Gaming Status</p>
+                            <p id="speedtest-status" class="font-bold text-sm text-white mt-0.5">Ready</p>
+                        </div>
+                    </div>
+
+                    <button type="button" id="btn-run-speedtest" onclick="runLiveSpeedTest()" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-sm font-extrabold bg-gradient-to-r from-cyber-blue to-cyber-glow text-space-950 shadow-cyber hover:brightness-110 transition">
+                        <i class="fa-solid fa-gauge-high mr-2"></i> স্পিড টেস্ট শুরু করুন
+                    </button>
+                </div>
+            </div>
+
+            <!-- APP TAB 4: PROFILE, SUPPORT & APP INSTALL -->
+            <div id="app-tab-profile" class="app-tab-view hidden space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- User Profile & Security Info -->
+                    <div class="glass-card rounded-3xl p-6 space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyber-blue to-cyber-glow text-space-950 font-display font-black text-xl flex items-center justify-center" id="profile-avatar-letter">U</div>
+                            <div>
+                                <h3 class="font-extrabold text-lg text-white" id="profile-full-name">গ্রাহক</h3>
+                                <p class="font-mono text-xs text-cyan-300" id="profile-email-text">—</p>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 rounded-2xl bg-space-950 border border-slate-800 space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">মোবাইল নম্বর:</span>
+                                <span class="font-mono text-white" id="profile-phone-text">—</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">সিকিউরিটি এনক্রিপশন:</span>
+                                <span class="text-emerald-400 font-bold"><i class="fa-solid fa-lock mr-1"></i>SHA-256 Active</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">অটো-লগআউট টাইমার:</span>
+                                <span class="text-cyan-300 font-semibold">৩০ মিনিট নিষ্ক্রিয়তায়</span>
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="logoutCustomer()" class="w-full py-3 rounded-xl text-xs font-extrabold bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 transition">
+                            <i class="fa-solid fa-right-from-bracket mr-1.5"></i> নিরাপদ লগআউট (Logout)
+                        </button>
+                    </div>
+
+                    <!-- App Install Guide & Customer Support -->
+                    <div class="glass-card rounded-3xl p-6 space-y-4">
+                        <h3 class="text-base font-extrabold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-mobile-screen-button text-cyber-glow"></i>
+                            <span>মোবাইলে অ্যাপ হিসেবে ব্যবহার করুন</span>
+                        </h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            এই পোর্টালটি সম্পূর্ণ <strong>PWA (Progressive Web App)</strong> ও <strong>Android APK</strong> উপযোগী করে তৈরি। মোবাইলের ব্রাউজার মেনু থেকে <strong>"Add to Home Screen" / "Install App"</strong> চাপলেই এটি ফোনের আসল অ্যাপের মতো ইনস্টল হয়ে যাবে।
+                        </p>
+
+                        <div class="pt-3 border-t border-slate-800 space-y-2.5 text-xs">
+                            <h4 class="font-bold text-white"><i class="fa-solid fa-headset text-cyber-glow mr-1.5"></i>২৪/৭ কাস্টমার সাপোর্ট</h4>
+                            <div class="p-3 rounded-xl bg-space-950 border border-slate-800 flex items-center justify-between gap-2">
+                                <a href="mailto:Support.iotwifi.@gmail.com" class="font-mono text-cyan-300 hover:underline truncate">Support.iotwifi.@gmail.com</a>
+                                <button type="button" onclick="copyText('Support.iotwifi.@gmail.com', 'সাপোর্ট জিমেইল কপি হয়েছে!')" class="px-2.5 py-1 rounded-lg bg-space-800 text-cyan-200 font-bold shrink-0">Copy</button>
+                            </div>
+                            <a href="https://wa.me/8801577261219" target="_blank" rel="noopener noreferrer" class="w-full py-3 rounded-xl font-extrabold brand-whatsapp text-white flex items-center justify-center gap-2">
+                                <i class="fa-brands fa-whatsapp text-base"></i>
+                                <span>WhatsApp সাপোর্ট (01577261219)</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- =========================================================================
+         MOBILE APP BOTTOM NAVIGATION BAR (VISIBLE AFTER LOGIN)
+    ========================================================================== -->
+    <nav id="app-bottom-nav" class="hidden fixed bottom-0 inset-x-0 z-40 bg-space-950/95 backdrop-blur-xl border-t border-cyber-cyan/25 app-bottom-safe">
+        <div class="max-w-lg mx-auto grid grid-cols-4 h-16">
+            <button type="button" onclick="switchAppTab('home')" data-app-tab="home" class="app-nav-btn flex flex-col items-center justify-center gap-1 text-cyber-glow">
+                <i class="fa-solid fa-wifi text-base"></i>
+                <span class="text-[10px] font-bold">প্যাকেজ ও বিল</span>
+            </button>
+            <button type="button" onclick="switchAppTab('orders')" data-app-tab="orders" class="app-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-receipt text-base"></i>
+                <span class="text-[10px] font-bold">অর্ডার হিস্ট্রি</span>
+            </button>
+            <button type="button" onclick="switchAppTab('speedtest')" data-app-tab="speedtest" class="app-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-gauge-high text-base"></i>
+                <span class="text-[10px] font-bold">স্পিড টেস্ট</span>
+            </button>
+            <button type="button" onclick="switchAppTab('profile')" data-app-tab="profile" class="app-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-user-gear text-base"></i>
+                <span class="text-[10px] font-bold">প্রোফাইল ও অ্যাপ</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- =========================================================================
+         3. HIGH-SECURITY ADMIN PANEL VIEW (SHA-256 + SESSION TIMEOUT + BACKUP)
+    ========================================================================== -->
+    <section id="view-admin" class="hidden flex-1 py-6 sm:py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+
+            <!-- Admin Top Bar -->
+            <div class="glass-card rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-cyber-cyan/40">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-cyber-blue to-cyber-glow flex items-center justify-center text-space-950">
+                        <i class="fa-solid fa-shield-halved text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-display font-extrabold text-base sm:text-lg text-white">IOT WiFi ADMIN DASHBOARD</h1>
+                        <p class="text-xs text-slate-400">Locked Admin Gmail: <span id="admin-owner-label" class="text-cyan-300 font-mono">—</span> • <span id="admin-list-count" class="text-emerald-300 font-semibold">Single Gmail Lock</span> • <span class="text-emerald-400">SHA-256 Encrypted</span></p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="exportPortalBackup()" class="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300">
+                        <i class="fa-solid fa-file-export mr-1"></i> ব্যাকআপ JSON
+                    </button>
+                    <button type="button" onclick="exitAdminToUserView()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-space-800 hover:bg-space-700 border border-slate-700 text-slate-200">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> অ্যাপে ফিরুন
+                    </button>
+                    <button type="button" onclick="lockAdminPanel()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300">
+                        <i class="fa-solid fa-lock mr-1"></i> Admin লক
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin KPI Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="glass-card rounded-2xl p-5">
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <span>মোট আয় (Total Revenue)</span>
+                        <i class="fa-solid fa-bangladeshi-taka-sign text-cyber-glow"></i>
+                    </div>
+                    <p id="stat-total-revenue" class="font-display text-3xl font-extrabold text-cyber-glow mt-2">৳0</p>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5">
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <span>নিবন্ধিত কাস্টমার (Total Customers)</span>
+                        <i class="fa-solid fa-users text-emerald-400"></i>
+                    </div>
+                    <p id="stat-active-users" class="font-display text-3xl font-extrabold text-emerald-400 mt-2">0</p>
+                </div>
+
+                <div class="glass-card rounded-2xl p-5">
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <span>পেন্ডিং পেমেন্ট (Pending Payments)</span>
+                        <i class="fa-solid fa-clock text-amber-400"></i>
+                    </div>
+                    <p id="stat-pending-payments" class="font-display text-3xl font-extrabold text-amber-300 mt-2">0</p>
+                </div>
+            </div>
+
+            <!-- Admin Navigation Tabs -->
+            <div class="flex flex-wrap gap-2">
+                <button type="button" onclick="switchAdminSection('payments')" data-admin-tab="payments" class="admin-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-cyber-glow text-space-950">
+                    পেমেন্ট ভেরিফিকেশন (TrxID)
+                </button>
+                <button type="button" onclick="switchAdminSection('customers')" data-admin-tab="customers" class="admin-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-space-800 text-slate-300 hover:bg-space-700">
+                    কাস্টমার তালিকা (Subscribers)
+                </button>
+                <button type="button" onclick="switchAdminSection('settings')" data-admin-tab="settings" class="admin-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-space-800 text-slate-300 hover:bg-space-700">
+                    পেমেন্ট নম্বর ও প্যাকেজ এডিটর
+                </button>
+                <button type="button" onclick="switchAdminSection('security')" data-admin-tab="security" class="admin-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-space-800 text-slate-300 hover:bg-space-700">
+                    সিকিউরিটি লগ ও Firebase
+                </button>
+            </div>
+
+            <!-- TAB 1: PAYMENTS -->
+            <div id="admin-sec-payments" class="admin-sec glass-card rounded-2xl p-5 sm:p-6 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h3 class="text-base font-extrabold text-white">পেমেন্ট ও TrxID যাচাই</h3>
+                        <p class="text-xs text-slate-400">Approve করলে কাস্টমারের প্যাকেজ ৩০ দিনের জন্য অ্যাক্টিভ হয়ে যাবে</p>
+                    </div>
+                    <select id="admin-pay-filter" onchange="renderAdminPaymentsTable()" class="px-3 py-2 rounded-xl bg-space-950 border border-slate-700 text-xs text-white">
+                        <option value="ALL">সব লেনদেন (All)</option>
+                        <option value="Pending">শুধু Pending</option>
+                        <option value="Approved">শুধু Approved</option>
+                        <option value="Rejected">শুধু Rejected</option>
+                    </select>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 text-[11px] uppercase">
+                                <th class="py-3 px-3">তারিখ</th>
+                                <th class="py-3 px-3">গ্রাহক / Gmail</th>
+                                <th class="py-3 px-3">মাধ্যম</th>
+                                <th class="py-3 px-3">Sender ও TrxID</th>
+                                <th class="py-3 px-3">প্যাকেজ ও টাকা</th>
+                                <th class="py-3 px-3">স্ট্যাটাস</th>
+                                <th class="py-3 px-3 text-right">অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-payments-body" class="divide-y divide-slate-800/70"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 2: CUSTOMERS -->
+            <div id="admin-sec-customers" class="admin-sec hidden glass-card rounded-2xl p-5 sm:p-6 space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-base font-extrabold text-white">প্রতিটি কাস্টমার ও ইউজারের আলাদা ডিটেইলস ও কন্ট্রোল</h3>
+                        <p class="text-xs text-slate-400">যেকোনো ইউজারের "বিস্তারিত / কন্ট্রোল" চাপলে তার আলাদা প্রোফাইল, ডিভাইস, ব্যালেন্স, মেয়াদ ও পেমেন্ট হিস্ট্রি দেখা যাবে</p>
+                    </div>
+                    <input type="text" id="admin-cust-search" onkeyup="renderAdminCustomersTable()" placeholder="নাম, Gmail, ফোন বা ফোনের মডেল..." class="px-3.5 py-2 rounded-xl bg-space-950 border border-slate-700 text-xs text-white focus:border-cyber-glow focus:outline-none">
+                </div>
+
+                <!-- Separate Individual Customer Cards Grid -->
+                <div id="admin-customers-cards" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 text-xs"></div>
+
+                <div class="overflow-x-auto pt-2 border-t border-slate-800/80">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 text-[11px] uppercase">
+                                <th class="py-3 px-3">কাস্টমারের নাম ও Gmail</th>
+                                <th class="py-3 px-3">হাতে থাকা ফোনের মডেল (Device)</th>
+                                <th class="py-3 px-3">ফোন ও ঠিকানা</th>
+                                <th class="py-3 px-3">প্যাকেজ ও মেয়াদ</th>
+                                <th class="py-3 px-3">স্ট্যাটাস</th>
+                                <th class="py-3 px-3 text-right">অ্যাকশন</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-customers-body" class="divide-y divide-slate-800/70"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 3: SETTINGS -->
+            <div id="admin-sec-settings" class="admin-sec hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <form onsubmit="saveAdminSettings(event)" class="lg:col-span-5 glass-card rounded-2xl p-5 sm:p-6 space-y-4 text-xs">
+                    <h3 class="text-base font-extrabold text-white">পেমেন্ট নম্বর ও অ্যাডমিন পাসওয়ার্ড</h3>
+
+                    <div>
+                        <label class="block text-pink-400 font-bold mb-1">bKash নম্বর</label>
+                        <input type="text" id="edit-bkash-num" required class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-orange-400 font-bold mb-1">Nagad নম্বর</label>
+                        <input type="text" id="edit-nagad-num" required class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-purple-400 font-bold mb-1">Rocket নম্বর</label>
+                        <input type="text" id="edit-rocket-num" required class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white font-mono">
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-800">
+                        <label class="block text-amber-300 font-semibold mb-1">নতুন অ্যাডমিন পাসওয়ার্ড (SHA-256 সুরক্ষিত)</label>
+                        <input type="password" id="edit-admin-pass" minlength="6" placeholder="কমপক্ষে ৬ অক্ষর" class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white">
+                    </div>
+
+                    <button type="submit" class="w-full py-3 rounded-xl font-extrabold bg-gradient-to-r from-cyber-blue to-cyber-glow text-space-950 shadow-cyber">
+                        সেটিংস সেভ করুন
+                    </button>
+                </form>
+
+                <div class="lg:col-span-7 glass-card rounded-2xl p-5 sm:p-6 space-y-4">
+                    <h3 class="text-base font-extrabold text-white">প্যাকেজ প্রাইস এডিটর</h3>
+                    <div id="admin-packages-editor" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs"></div>
+                </div>
+            </div>
+
+            <!-- TAB 4: SECURITY AUDIT LOG & FIREBASE -->
+            <div id="admin-sec-security" class="admin-sec hidden grid grid-cols-1 lg:grid-cols-12 gap-6 text-xs">
+                <!-- Security Audit Log -->
+                <div class="lg:col-span-6 glass-card rounded-2xl p-5 sm:p-6 space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <h3 class="text-base font-extrabold text-white"><i class="fa-solid fa-shield-virus text-emerald-400 mr-1.5"></i>সিকিউরিটি অডিট লগ (ইউজারের আলাদা লগ)</h3>
+                            <p class="text-[10px] text-slate-400">শুধু Admin Panel-এ দৃশ্যমান • প্রতিটি ইউজারের লগ আলাদাভাবে দেখা যায়</p>
+                        </div>
+                        <select id="admin-log-user-filter" onchange="renderAdminSecurityLogs()" class="px-3 py-1.5 rounded-xl bg-space-950 border border-slate-700 text-xs text-cyan-200 focus:border-cyber-glow focus:outline-none">
+                            <option value="ALL">সব ইউজার / সিস্টেম</option>
+                        </select>
+                    </div>
+                    <div id="admin-audit-log-list" class="space-y-2 max-h-80 overflow-y-auto"></div>
+                </div>
+
+                <!-- Firebase Cloud Sync -->
+                <div class="lg:col-span-6 glass-card rounded-2xl p-5 sm:p-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-base font-extrabold text-white">Firebase লাইভ সিঙ্ক</h3>
+                        <span id="admin-fb-status" class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-800 text-cyan-300">Local Vault Active</span>
+                    </div>
+                    <textarea id="firebase-json-input" rows="7" placeholder="firebaseConfig JSON..." class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 font-mono text-cyan-200 focus:border-cyber-glow focus:outline-none"></textarea>
+
+                    <div class="flex flex-wrap gap-2.5">
+                        <button type="button" onclick="connectFirebaseFromInput()" class="px-5 py-2.5 rounded-xl font-extrabold bg-emerald-500 hover:bg-emerald-400 text-space-950">
+                            Connect Firebase
+                        </button>
+                        <button type="button" onclick="disconnectFirebase()" class="px-4 py-2.5 rounded-xl font-bold bg-space-800 hover:bg-space-700 text-slate-300 border border-slate-700">
+                            Disconnect
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================================
+         FLOATING WHATSAPP BUTTON
+    ========================================================================== -->
+    <a href="https://wa.me/8801577261219" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp সাপোর্ট 01577261219" class="fixed bottom-20 sm:bottom-5 right-4 z-40 inline-flex items-center gap-2 px-3.5 py-3 rounded-full brand-whatsapp text-white font-extrabold text-xs shadow-xl hover:scale-105 active:scale-95 transition">
+        <i class="fa-brands fa-whatsapp text-lg"></i>
+        <span class="hidden sm:inline">WhatsApp সাপোর্ট</span>
+    </a>
+
+    <!-- =========================================================================
+         DEVICE GMAIL SELECTOR MODAL
+    ========================================================================== -->
+    <div id="modal-gmail-quick" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card max-w-md w-full rounded-3xl p-6 relative border-cyber-glow/50 space-y-4">
+            <button type="button" onclick="closeModal('modal-gmail-quick')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-space-800 hover:bg-space-700 text-slate-300 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-white flex items-center justify-center shadow shrink-0">
+                    <svg class="w-6 h-6" viewBox="0 0 48 48">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-base sm:text-lg text-white">Gmail / Google অ্যাকাউন্ট নির্বাচন করুন</h3>
+                    <p class="text-[11px] text-slate-400">সরাসরি অ্যাপে প্রবেশ করতে আপনার Gmail বেছে নিন</p>
+                </div>
+            </div>
+
+            <button type="button" id="modal-google-oauth-btn" onclick="loginWithGoogleOAuth()" class="hidden w-full py-3 px-4 rounded-xl text-xs font-extrabold bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:brightness-110 transition flex items-center justify-center gap-2">
+                <i class="fa-brands fa-google"></i>
+                <span>Google Account পপ-আপ দিয়ে সাইন-ইন</span>
+            </button>
+
+            <div id="modal-saved-gmails-wrap" class="hidden space-y-2">
+                <p class="text-[11px] font-bold text-cyan-300">এই ডিভাইসে সেভ থাকা Gmail অ্যাকাউন্ট (১ ক্লিকে লগইন):</p>
+                <div id="modal-saved-gmails-list" class="space-y-1.5 max-h-40 overflow-y-auto"></div>
+            </div>
+
+            <form onsubmit="submitQuickGmailModal(event)" class="space-y-3 text-xs pt-1 border-t border-slate-800">
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">আপনার Gmail অ্যাড্রেস লিখুন <span class="text-rose-400">*</span></label>
+                    <input type="email" id="quick-gmail-input" required placeholder="yourname@gmail.com" autocomplete="email" class="w-full px-3.5 py-3 rounded-xl bg-space-950 border border-slate-700 text-white focus:border-cyber-glow focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-1">আপনার নাম (ঐচ্ছিক)</label>
+                    <input type="text" id="quick-gmail-name" placeholder="পূর্ণ নাম" autocomplete="name" class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white focus:border-cyber-glow focus:outline-none">
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-cyber-blue to-cyber-glow text-space-950 shadow-cyber hover:brightness-110 transition">
+                    Gmail দিয়ে অ্যাপে প্রবেশ করুন →
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         INDIVIDUAL CUSTOMER FULL DETAILS & CONTROL MODAL (ADMIN)
+    ========================================================================== -->
+    <div id="modal-customer-detail" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card max-w-2xl w-full rounded-3xl p-5 sm:p-7 relative border-cyber-glow/50 space-y-5 max-h-[90vh] overflow-y-auto">
+            <button type="button" onclick="closeModal('modal-customer-detail')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-space-800 hover:bg-space-700 text-slate-300 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div id="customer-detail-body" class="space-y-4 text-xs"></div>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         DIGITAL INVOICE / RECEIPT MODAL
+    ========================================================================== -->
+    <div id="modal-invoice" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card max-w-md w-full rounded-3xl p-6 relative border-cyber-glow/50 space-y-4">
+            <button type="button" onclick="closeModal('modal-invoice')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-space-800 text-slate-300 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="invoice-modal-content" class="space-y-4 text-xs"></div>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         CUSTOM EXPIRY DATE / DAYS MODAL
+    ========================================================================== -->
+    <div id="modal-custom-expiry" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-6 relative border-cyber-glow/50 space-y-4">
+            <button type="button" onclick="closeModal('modal-custom-expiry')" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div>
+                <h3 class="font-bold text-base text-white">কাস্টম মেয়াদ বা তারিখ সেট করুন</h3>
+                <p id="custom-expiry-customer-info" class="text-xs font-mono text-cyan-300 mt-0.5">—</p>
+            </div>
+
+            <form onsubmit="applyCustomExpiryFromModal(event)" class="space-y-3 text-xs">
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-slate-300 mb-1">প্যাকেজ স্পিড</label>
+                        <select id="custom-pkg-speed-select" class="w-full px-3 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white">
+                            <option value="5">5 Mbps</option>
+                            <option value="7">7 Mbps</option>
+                            <option value="10">10 Mbps</option>
+                            <option value="15">15 Mbps</option>
+                            <option value="20">20 Mbps</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 mb-1">স্ট্যাটাস</label>
+                        <select id="custom-status-select" class="w-full px-3 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white">
+                            <option value="Active">Active (চালু)</option>
+                            <option value="Inactive">Inactive</option>
+                            <option value="Suspended">Suspended</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1">আজ থেকে কত দিন (ঐচ্ছিক, যেমন: 15 বা -5)</label>
+                    <input type="number" id="custom-expiry-days-input" placeholder="যেমন: 15" class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white font-mono">
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1">অথবা সরাসরি শেষ তারিখ (Expiry Date)</label>
+                    <input type="date" id="custom-expiry-date-input" class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white font-mono">
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl font-extrabold bg-gradient-to-r from-cyber-blue to-cyber-glow text-space-950">
+                    কাস্টমাইজেশন সেভ করুন
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         ADMIN SETUP & LOGIN MODALS (SHA-256 PROTECTED)
+    ========================================================================== -->
+    <div id="modal-admin-setup" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card max-w-md w-full rounded-2xl p-6 relative border-cyber-glow/50 space-y-4">
+            <button type="button" onclick="closeModal('modal-admin-setup')" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <h3 class="font-bold text-lg text-white">প্রথমবার Admin অ্যাকাউন্ট তৈরি করুন</h3>
+            <p class="text-xs text-slate-400">আপনার Owner ID এবং শক্তিশালী Password সেট করুন (SHA-256 এনক্রিপ্টেড)।</p>
+
+            <form onsubmit="completeAdminSetup(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-300 mb-1">Admin ID / Email</label>
+                    <input type="text" id="setup-owner-name" required placeholder="যেমন: admin@iotwifi.com" class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1">Admin Password (কমপক্ষে ৬ অক্ষর)</label>
+                    <input type="password" id="setup-owner-pass" required minlength="6" placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white">
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl font-extrabold bg-gradient-to-r from-cyber-blue to-cyber-glow text-space-950">
+                    পাসওয়ার্ড সেভ করে প্রবেশ করুন
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-admin-login" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-6 relative border-cyber-glow/50 space-y-4">
+            <button type="button" onclick="closeModal('modal-admin-login')" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <h3 class="font-bold text-lg text-white">Admin Panel লগইন</h3>
+            <p id="admin-lockout-msg" class="hidden p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-xs text-rose-300 font-semibold"></p>
+
+            <form onsubmit="verifyAdminLogin(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-300 mb-1">Admin Gmail / ID <span class="text-rose-400">*</span></label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-3.5 top-3 text-slate-400"></i>
+                        <input type="text" id="admin-login-email" required placeholder="admin@gmail.com" autocomplete="username" class="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white focus:border-cyber-glow focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1">Admin Password <span class="text-rose-400">*</span></label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-3.5 top-3 text-slate-400"></i>
+                        <input type="password" id="admin-login-pass" required placeholder="••••••••" autocomplete="current-password" class="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-space-950 border border-slate-700 text-white focus:border-cyber-glow focus:outline-none">
+                    </div>
+                </div>
+                <button type="submit" id="admin-login-submit" class="w-full py-3 rounded-xl font-extrabold bg-gradient-to-r from-cyber-blue to-cyber-glow text-space-950">
+                    আনলক করুন
+                </button>
+                <button type="button" onclick="resetAdminPasswordWithGmail()" class="w-full py-2.5 rounded-xl font-bold bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/40 text-amber-200 transition">
+                    পাসওয়ার্ড ভুলে গেছেন? এই Gmail-এর নতুন পাসওয়ার্ড সেট করুন
+                </button>
+                <p class="text-[11px] text-amber-200/95 bg-amber-950/40 border border-amber-500/30 rounded-xl p-2.5 leading-relaxed">
+                    <strong>Single Gmail Lock:</strong> প্রথমবার যে <strong>Gmail</strong> দিয়ে লগইন করবেন, সেটিই স্থায়ীভাবে Admin Gmail হিসেবে সেভ হবে। এরপর অন্য কোনো Gmail দিয়ে Admin Panel-এ লগইন করা যাবে না।
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         HIGH-SECURITY & APP-READY JAVASCRIPT ENGINE
+    ========================================================================== -->
+    <script>
+        const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+        const THIRTY_DAYS_MS = 30 * TWENTY_FOUR_HOURS_MS;
+
+        function getCustomerExpiryTimestamp(c) {
+            if (!c || c.status !== 'Active') return 0;
+            if (typeof c.expiryTimestamp === 'number' && c.expiryTimestamp > 0) {
+                return c.expiryTimestamp;
+            }
+            if (typeof c.remainingDays === 'number' && c.lastDayTickAt) {
+                return Number(c.lastDayTickAt) + (Math.max(0, c.remainingDays) * TWENTY_FOUR_HOURS_MS);
+            }
+            if (c.expiry) {
+                const parsed = new Date(c.expiry + 'T23:59:59').getTime();
+                if (!Number.isNaN(parsed)) return parsed;
+            }
+            return 0;
+        }
+
+        function formatLiveCountdownBN(remainingMs) {
+            if (remainingMs <= 0) return '0 দিন 00 ঘণ্টা 00 মিনিট 00 সেকেন্ড (মেয়াদ শেষ)';
+            const totalSec = Math.floor(remainingMs / 1000);
+            const days = Math.floor(totalSec / 86400);
+            const hours = Math.floor((totalSec % 86400) / 3600);
+            const mins = Math.floor((totalSec % 3600) / 60);
+            const secs = totalSec % 60;
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${days} দিন ${pad(hours)} ঘণ্টা ${pad(mins)} মিনিট ${pad(secs)} সেকেন্ড`;
+        }
+
+        function updateAllLiveCountdowns() {
+            const now = Date.now();
+            let expiredChanged = false;
+
+            for (const c of appState.customers) {
+                if (c.status !== 'Active') continue;
+                const expTs = getCustomerExpiryTimestamp(c);
+                if (!expTs) continue;
+                const remMs = expTs - now;
+                if (remMs <= 0) {
+                    c.remainingDays = 0;
+                    c.expiryTimestamp = expTs;
+                    c.status = 'Inactive';
+                    expiredChanged = true;
+                    logSecurityEvent('Package Expired (Live Timer 0s)', c.email, c.email);
+                } else {
+                    c.remainingDays = Math.ceil(remMs / TWENTY_FOUR_HOURS_MS);
+                }
+            }
+
+            if (expiredChanged) {
+                saveState();
+                if (currentRoute === 'main') renderUserSubscriptionStatus();
+                if (currentRoute === 'admin') renderAdminCustomersTable();
+                return;
+            }
+
+            // 1. Update Customer Panel Live Countdown
+            if (currentUser) {
+                const sub = appState.customers.find(c => c.email === currentUser.email);
+                const remDaysEl = document.getElementById('panel-remaining-days');
+                const livePillEl = document.getElementById('panel-live-countdown-pill');
+                if (sub && sub.status === 'Active') {
+                    const remMs = Math.max(0, getCustomerExpiryTimestamp(sub) - now);
+                    const formatted = formatLiveCountdownBN(remMs);
+                    if (remDaysEl) remDaysEl.textContent = formatted;
+                    if (livePillEl) livePillEl.textContent = formatted;
+                } else {
+                    if (remDaysEl) remDaysEl.textContent = '0 দিন 00:00:00';
+                    if (livePillEl) livePillEl.textContent = 'No Active Plan';
+                }
+            }
+
+            // 2. Update Admin Panel Live Countdown badges (Cards, Table, and Individual Detail Modal)
+            document.querySelectorAll('[data-live-countdown-cust]').forEach(el => {
+                const custId = el.getAttribute('data-live-countdown-cust');
+                const c = appState.customers.find(x => x.id === custId);
+                if (c && c.status === 'Active') {
+                    const remMs = Math.max(0, getCustomerExpiryTimestamp(c) - now);
+                    el.textContent = formatLiveCountdownBN(remMs);
+                } else {
+                    el.textContent = 'Inactive / 0 দিন';
+                }
+            });
+        }
+
+        async function requestBrowserNotificationPermission() {
+            if (!('Notification' in window)) return;
+            if (Notification.permission === 'default') {
+                try {
+                    await Notification.requestPermission();
+                } catch (e) {}
+            }
+        }
+
+        function triggerTwoDayExpiryNotification(cust, daysLeft) {
+            if (!cust || !currentUser || cust.email !== currentUser.email) return;
+            if (daysLeft > 2 || daysLeft <= 0) return;
+
+            const cycleKey = `${cust.id}_${cust.activationCycleId || 1}_day_${daysLeft}`;
+            if (cust.lastNotifiedCycleKey === cycleKey) return;
+
+            cust.lastNotifiedCycleKey = cycleKey;
+
+            const msg = `IOT WiFi রিমাইন্ডার: আপনার ${cust.pkgSpeed || ''} Mbps প্যাকেজের মেয়াদ শেষ হতে আর মাত্র ${daysLeft} দিন বাকি আছে!`;
+            showToast(msg, 'info');
+
+            if ('Notification' in window && Notification.permission === 'granted') {
+                try {
+                    new Notification('IOT WiFi — মেয়াদ শেষ হওয়ার সতর্কবার্তা', {
+                        body: `আপনার প্যাকেজের মেয়াদ আর মাত্র ${daysLeft} দিন বাকি আছে। সংযোগ সচল রাখতে বিল পরিশোধ করুন।`
+                    });
+                } catch (e) {}
+            }
+        }
+
+        async function process24HourDayCounters() {
+            const now = Date.now();
+            let changed = false;
+
+            for (const c of appState.customers) {
+                if (c.status !== 'Active') continue;
+
+                let expTs = getCustomerExpiryTimestamp(c);
+                if (!expTs) {
+                    expTs = now + THIRTY_DAYS_MS;
+                    c.expiryTimestamp = expTs;
+                    c.expiry = new Date(expTs).toISOString().split('T')[0];
+                    changed = true;
+                } else if (!c.expiryTimestamp) {
+                    c.expiryTimestamp = expTs;
+                    changed = true;
+                }
+
+                const remMs = expTs - now;
+                if (remMs <= 0) {
+                    c.remainingDays = 0;
+                    c.status = 'Inactive';
+                    logSecurityEvent('Package Expired (0 Days)', c.email, c.email);
+                    changed = true;
+                } else {
+                    const calcDays = Math.ceil(remMs / TWENTY_FOUR_HOURS_MS);
+                    if (c.remainingDays !== calcDays) {
+                        c.remainingDays = calcDays;
+                        changed = true;
+                    }
+                }
+
+                if (currentUser && c.email === currentUser.email && c.status === 'Active' && c.remainingDays <= 2 && c.remainingDays > 0) {
+                    triggerTwoDayExpiryNotification(c, c.remainingDays);
+                    changed = true;
+                }
+            }
+
+            if (changed) {
+                await saveState();
+                if (currentRoute === 'main') renderUserSubscriptionStatus();
+                if (currentRoute === 'admin') renderAdminCustomersTable();
+            }
+        }
+
+        function syncExpiryBanner(sub) {
+            const bannerEl = document.getElementById('expiry-warning-banner');
+            const bannerTitle = document.getElementById('expiry-warning-title');
+            const bannerDesc = document.getElementById('expiry-warning-desc');
+            if (!bannerEl) return;
+
+            const isActive = sub && sub.status === 'Active';
+            const daysLeft = isActive ? Math.max(0, Number(sub.remainingDays ?? 0)) : 0;
+
+            if (isActive && daysLeft <= 2 && daysLeft > 0) {
+                bannerEl.classList.remove('hidden');
+                if (bannerTitle) bannerTitle.textContent = `সতর্কবার্তা: মেয়াদ শেষ হতে আর মাত্র ${daysLeft} দিন বাকি!`;
+                if (bannerDesc) bannerDesc.textContent = `আপনার ${sub.pkgSpeed || ''} Mbps প্যাকেজের মেয়াদ আর মাত্র ${daysLeft} দিন রয়েছে। নেট চালু রাখতে দ্রুত রিনিউ করুন।`;
+            } else {
+                bannerEl.classList.add('hidden');
+            }
+        }
+
+        const STORAGE_KEY = 'IOT_WIFI_SECURE_APP_V3';
+        const SAVED_GMAILS_KEY = 'IOT_WIFI_DEVICE_GMAILS_V3';
+        const FB_CONFIG_KEY = 'IOT_WIFI_FB_CONFIG_V3';
+        const PASSWORD_SALT = 'IOT_WIFI_2026_SECURE_SALT_#991';
+
+        // --- AUTOMATIC MOBILE DEVICE MODEL & OS DETECTOR ---
+        async function detectClientDeviceInfo() {
+            const ua = navigator.userAgent || '';
+            let modelName = '';
+            let osInfo = '';
+            let brand = '';
+
+            try {
+                if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+                    const hints = await navigator.userAgentData.getHighEntropyValues([
+                        'model', 'platform', 'platformVersion'
+                    ]);
+                    if (hints.model) modelName = hints.model.trim();
+                    if (hints.platform) {
+                        osInfo = hints.platform + (hints.platformVersion ? ' ' + hints.platformVersion.split('.')[0] : '');
+                    }
+                }
+            } catch (e) {}
+
+            if (!modelName) {
+                if (/iPhone/i.test(ua)) {
+                    const iosMatch = ua.match(/OS\s([0-9_]+)/i);
+                    const iosVer = iosMatch ? iosMatch[1].replace(/_/g, '.') : '';
+                    modelName = 'Apple iPhone';
+                    osInfo = iosVer ? 'iOS ' + iosVer : 'iOS';
+                } else if (/iPad/i.test(ua)) {
+                    modelName = 'Apple iPad';
+                    osInfo = 'iPadOS';
+                } else if (/Android/i.test(ua)) {
+                    const androidVerMatch = ua.match(/Android\s([0-9.]+)/i);
+                    osInfo = androidVerMatch ? 'Android ' + androidVerMatch[1] : 'Android';
+                    const buildMatch = ua.match(/Android[^;)]*;\s*([^;)]+?)\s*Build\//i);
+                    if (buildMatch && buildMatch[1]) {
+                        modelName = buildMatch[1].trim();
+                    } else {
+                        const parts = ua.split(';');
+                        if (parts.length >= 3) {
+                            modelName = parts[2].split(')')[0].replace(/Build\/.*/i, '').trim();
+                        }
+                    }
+                } else if (/Windows/i.test(ua)) {
+                    modelName = 'Windows PC / Laptop';
+                    osInfo = 'Windows';
+                } else if (/Macintosh/i.test(ua)) {
+                    modelName = 'Apple MacBook / Mac';
+                    osInfo = 'macOS';
+                }
+            }
+
+            if (!modelName || modelName.toUpperCase() === 'K' || modelName.toLowerCase() === 'linux') {
+                modelName = /Android/i.test(ua) ? 'Android Smartphone' : 'Web Browser Device';
+            }
+
+            const upper = modelName.toUpperCase();
+            if (upper.startsWith('SM-')) brand = 'Samsung (' + modelName + ')';
+            else if (upper.startsWith('RMX')) brand = 'Realme (' + modelName + ')';
+            else if (upper.startsWith('CPH')) brand = 'OPPO (' + modelName + ')';
+            else if (upper.startsWith('V2') || upper.startsWith('I2')) brand = 'Vivo (' + modelName + ')';
+            else if (upper.startsWith('22') || upper.startsWith('23') || upper.startsWith('24') || upper.includes('REDMI') || upper.includes('POCO') || upper.includes('M2')) brand = 'Xiaomi / Redmi (' + modelName + ')';
+            else if (upper.startsWith('TECNO') || upper.startsWith('SPARK') || upper.startsWith('POVA') || upper.startsWith('CAMON')) brand = 'Tecno (' + modelName + ')';
+            else if (upper.startsWith('INFINIX') || upper.startsWith('X6')) brand = 'Infinix (' + modelName + ')';
+            else if (upper.startsWith('ITEL') || upper.startsWith('A66') || upper.startsWith('P65')) brand = 'itel (' + modelName + ')';
+            else if (upper.startsWith('WALTON') || upper.includes('PRIMO')) brand = 'Walton (' + modelName + ')';
+            else if (upper.includes('SYMPHONY')) brand = 'Symphony (' + modelName + ')';
+            else if (upper.includes('PIXEL')) brand = 'Google (' + modelName + ')';
+            else brand = modelName;
+
+            const screenRes = `${window.screen.width}x${window.screen.height}`;
+            return {
+                deviceModel: brand,
+                osInfo: osInfo || 'Mobile OS',
+                screenRes,
+                fullLabel: `${brand}${osInfo ? ' • ' + osInfo : ''}`
+            };
+        }
+
+        const DEFAULT_PACKAGES = [
+            { id: 'pkg-5', speed: 5, price: 150, desc: 'স্মার্ট ব্রাউজিং ও সোশ্যাল', popular: false },
+            { id: 'pkg-7', speed: 7, price: 200, desc: 'স্মুথ HD ভিডিও স্ট্রিমিং', popular: false },
+            { id: 'pkg-10', speed: 10, price: 250, desc: 'সেরা সাশ্রয়ী হোম প্ল্যান', popular: true },
+            { id: 'pkg-15', speed: 15, price: 300, desc: '4K ও ওয়ার্ক ফ্রম হোম', popular: false },
+            { id: 'pkg-20', speed: 20, price: 350, desc: 'আল্ট্রা-লো পিং গেমিং', popular: false }
+        ];
+
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        async function hashPasswordSHA256(plainText) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(PASSWORD_SALT + plainText);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function createInitialState() {
+            return {
+                owner: {
+                    setupDone: false,
+                    ownerName: '',
+                    passwordHash: '',
+                    authorizedAdmins: [],
+                    bkashNum: '01324214887',
+                    nagadNum: '01324214887',
+                    rocketNum: '013242148879'
+                },
+                packages: DEFAULT_PACKAGES.map(p => ({ ...p })),
+                accounts: [],
+                customers: [],
+                payments: [],
+                securityLogs: []
+            };
+        }
+
+        let appState = loadState();
+        let currentUser = null;
+        let isAdminAuthenticated = false;
+        let activeAdminSessionEmail = '';
+        let currentRoute = 'login';
+        let currentAppTab = 'home';
+        let failedAttempts = 0;
+        let lockedUntil = 0;
+        let lastActivityTime = Date.now();
+        let logoTapCount = 0;
+        let deferredInstallPrompt = null;
+
+        let db = null;
+        let auth = null;
+        let isCloudSynced = false;
+        let unsubSnapshot = null;
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return createInitialState();
+                const parsed = JSON.parse(raw);
+                const base = createInitialState();
+                return {
+                    owner: {
+                        ...base.owner,
+                        ...(parsed.owner || {}),
+                        authorizedAdmins: Array.isArray(parsed.owner && parsed.owner.authorizedAdmins)
+                            ? parsed.owner.authorizedAdmins
+                            : []
+                    },
+                    packages: Array.isArray(parsed.packages) && parsed.packages.length ? parsed.packages : base.packages,
+                    accounts: Array.isArray(parsed.accounts) ? parsed.accounts : [],
+                    customers: Array.isArray(parsed.customers) ? parsed.customers : [],
+                    payments: Array.isArray(parsed.payments) ? parsed.payments : [],
+                    securityLogs: Array.isArray(parsed.securityLogs) ? parsed.securityLogs : []
+                };
+            } catch (e) {
+                console.error(e);
+                return createInitialState();
+            }
+        }
+
+        async function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch (e) {
+                console.error(e);
+            }
+
+            if (isCloudSynced && db) {
+                try {
+                    await db.collection('iot_wifi_portal').doc('state').set(appState, { merge: true });
+                } catch (e) {
+                    console.error('Firestore sync error:', e);
+                }
+            }
+        }
+
+        function logSecurityEvent(action, detail, targetEmail = '') {
+            const resolvedEmail = String(
+                targetEmail ||
+                (currentUser && currentUser.email) ||
+                activeAdminSessionEmail ||
+                'system'
+            ).trim().toLowerCase();
+
+            appState.securityLogs.unshift({
+                id: 'log-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+                userEmail: resolvedEmail,
+                time: new Date().toLocaleString('bn-BD'),
+                action,
+                detail
+            });
+            appState.securityLogs = appState.securityLogs.slice(0, 200);
+        }
+
+        function initPWAAppConfig() {
+            const manifest = {
+                name: "IOT WiFi Smart Fiber Portal",
+                short_name: "IOT WiFi",
+                start_url: ".",
+                display: "standalone",
+                background_color: "#030712",
+                theme_color: "#030712",
+                orientation: "portrait",
+                icons: [
+                    {
+                        src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%23030712'/><path d='M38 86 Q96 34 154 86 M62 112 Q96 76 130 112 M84 136 Q96 122 108 136' stroke='%2300e5ff' stroke-width='15' fill='none' stroke-linecap='round'/><circle cx='96' cy='154' r='10' fill='%2300e5ff'/></svg>",
+                        sizes: "192x192",
+                        type: "image/svg+xml"
+                    }
+                ]
+            };
+            const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+            document.getElementById('pwa-manifest-link').href = URL.createObjectURL(blob);
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredInstallPrompt = e;
+                const btn = document.getElementById('btn-install-pwa');
+                if (btn) {
+                    btn.classList.remove('hidden');
+                    btn.classList.add('inline-flex');
+                }
+            });
+        }
+
+        window.triggerInstallApp = async function () {
+            if (!deferredInstallPrompt) {
+                showToast('ব্রাউজার মেনু থেকে "Add to Home Screen" চাপুন।', 'info');
+                return;
+            }
+            deferredInstallPrompt.prompt();
+            const choice = await deferredInstallPrompt.userChoice;
+            if (choice.outcome === 'accepted') {
+                showToast('IOT WiFi অ্যাপ ইনস্টল হচ্ছে!', 'success');
+            }
+            deferredInstallPrompt = null;
+        };
+
+        ['click', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+            window.addEventListener(evt, () => { lastActivityTime = Date.now(); }, { passive: true });
+        });
+
+        setInterval(() => {
+            const idleMs = Date.now() - lastActivityTime;
+            if (isAdminAuthenticated && idleMs > 15 * 60 * 1000) {
+                lockAdminPanel();
+                showToast('নিরাপত্তার স্বার্থে ১৫ মিনিট নিষ্ক্রিয় থাকায় Admin Panel লক করা হয়েছে।', 'info');
+            } else if (currentUser && idleMs > 30 * 60 * 1000) {
+                logoutCustomer();
+                showToast('৩০ মিনিট নিষ্ক্রিয় থাকায় সেশন লগআউট করা হয়েছে।', 'info');
+            }
+        }, 30000);
+
+        window.handleLogoSecretTap = function () {
+            logoTapCount += 1;
+            if (logoTapCount >= 5) {
+                logoTapCount = 0;
+                openAdminGate();
+            }
+            setTimeout(() => { logoTapCount = 0; }, 2500);
+        };
+
+        window.togglePassVisibility = function (inputId) {
+            const inp = document.getElementById(inputId);
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+        };
+
+        function getSavedDeviceGmails() {
+            try { return JSON.parse(localStorage.getItem(SAVED_GMAILS_KEY) || '[]'); }
+            catch { return []; }
+        }
+
+        function rememberDeviceGmail(email, name) {
+            const list = getSavedDeviceGmails().filter(item => item.email !== email);
+            list.unshift({ email, name: name || '' });
+            localStorage.setItem(SAVED_GMAILS_KEY, JSON.stringify(list.slice(0, 6)));
+        }
+
+        window.openGmailQuickModal = function () {
+            const list = getSavedDeviceGmails();
+            const wrap = document.getElementById('modal-saved-gmails-wrap');
+            const listEl = document.getElementById('modal-saved-gmails-list');
+
+            if (list.length) {
+                wrap.classList.remove('hidden');
+                listEl.innerHTML = list.map(item => `
+                    <button type="button" onclick="selectSavedDeviceGmail('${escapeHTML(item.email)}', '${escapeHTML(item.name || '')}')" class="w-full p-2.5 rounded-xl bg-space-950 hover:bg-space-800 border border-slate-800 hover:border-cyber-cyan/40 flex items-center justify-between text-left transition">
+                        <div class="flex items-center gap-2.5 truncate">
+                            <span class="w-7 h-7 rounded-full bg-cyber-glow/20 text-cyber-glow font-bold text-xs flex items-center justify-center uppercase">${escapeHTML(item.email[0])}</span>
+                            <div class="truncate">
+                                <p class="text-xs font-mono font-bold text-white truncate">${escapeHTML(item.email)}</p>
+                                ${item.name ? `<p class="text-[10px] text-slate-400 truncate">${escapeHTML(item.name)}</p>` : ''}
+                            </div>
+                        </div>
+                        <span class="text-[11px] font-bold text-cyber-glow shrink-0">প্রবেশ →</span>
+                    </button>
+                `).join('');
+            } else {
+                wrap.classList.add('hidden');
+            }
+
+            openModal('modal-gmail-quick');
+            setTimeout(() => document.getElementById('quick-gmail-input').focus(), 80);
+        };
+
+        window.selectSavedDeviceGmail = function (email, name) {
+            closeModal('modal-gmail-quick');
+            completeUserLogin(email, name, '');
+        };
+
+        window.submitQuickGmailModal = function (e) {
+            e.preventDefault();
+            const email = document.getElementById('quick-gmail-input').value.trim().toLowerCase();
+            const name = document.getElementById('quick-gmail-name').value.trim();
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showToast('সঠিক Gmail অ্যাড্রেস লিখুন।', 'error');
+                return;
+            }
+            closeModal('modal-gmail-quick');
+            completeUserLogin(email, name, '');
+        };
+
+        window.loginWithGoogleOAuth = async function () {
+            if (!auth) return;
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const result = await auth.signInWithPopup(provider);
+                if (result.user && result.user.email) {
+                    closeModal('modal-gmail-quick');
+                    completeUserLogin(result.user.email.toLowerCase(), result.user.displayName || '', '');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Google পপ-আপ ব্লক হয়েছে। নিচের বক্সে Gmail লিখে লগইন করুন।', 'error');
+            }
+        };
+
+        window.switchAuthTab = function (tab) {
+            const formSignIn = document.getElementById('form-signin');
+            const formReg = document.getElementById('form-register');
+            const btnSignIn = document.getElementById('auth-tab-signin');
+            const btnReg = document.getElementById('auth-tab-register');
+
+            if (tab === 'register') {
+                formSignIn.classList.add('hidden');
+                formReg.classList.remove('hidden');
+                btnReg.className = 'py-2 rounded-lg bg-cyber-glow text-space-950 transition';
+                btnSignIn.className = 'py-2 rounded-lg text-slate-300 hover:text-white transition';
+            } else {
+                formReg.classList.add('hidden');
+                formSignIn.classList.remove('hidden');
+                btnSignIn.className = 'py-2 rounded-lg bg-cyber-glow text-space-950 transition';
+                btnReg.className = 'py-2 rounded-lg text-slate-300 hover:text-white transition';
+            }
+        };
+
+        window.handleNewAccountRegister = async function (e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const pass = document.getElementById('reg-password').value;
+
+            if (!/^01[3-9][0-9]{8}$/.test(phone)) {
+                showToast('সঠিক ১১ ডিজিটের বাংলাদেশি মোবাইল নম্বর দিন (01XXXXXXXXX)।', 'error');
+                return;
+            }
+
+            if (appState.accounts.some(acc => acc.email === email)) {
+                showToast('এই Gmail দিয়ে ইতিমধ্যে অ্যাকাউন্ট খোলা আছে। Sign In করুন।', 'error');
+                switchAuthTab('signin');
+                document.getElementById('signin-email').value = email;
+                return;
+            }
+
+            const hashed = await hashPasswordSHA256(pass);
+            appState.accounts.push({
+                email,
+                name,
+                phone,
+                passwordHash: hashed,
+                createdAt: new Date().toISOString()
+            });
+
+            const dev = await detectClientDeviceInfo();
+            if (!appState.customers.some(c => c.email === email)) {
+                appState.customers.unshift({
+                    id: 'cust-' + Date.now(),
+                    name,
+                    email,
+                    phone,
+                    address: '—',
+                    pkgSpeed: 0,
+                    balance: 0,
+                    status: 'Inactive',
+                    expiry: '',
+                    deviceModel: dev.deviceModel,
+                    osInfo: dev.osInfo,
+                    lastLogin: new Date().toLocaleString('bn-BD')
+                });
+            }
+
+            logSecurityEvent('New Registration', email, email);
+            await saveState();
+            completeUserLogin(email, name, phone);
+        };
+
+        window.handlePasswordSignIn = async function (e) {
+            e.preventDefault();
+            const email = document.getElementById('signin-email').value.trim().toLowerCase();
+            const rawPass = document.getElementById('signin-password').value;
+            const pass = rawPass.trim();
+            const hashed = await hashPasswordSHA256(pass);
+            const rawHashed = rawPass !== pass ? await hashPasswordSHA256(rawPass) : hashed;
+
+            const existing = appState.accounts.find(acc => acc.email === email);
+            if (existing) {
+                const isDirectMatch = existing.passwordHash === hashed || existing.passwordHash === rawHashed;
+                let isLegacyMatch = false;
+                try {
+                    isLegacyMatch = existing.passwordHash === btoa(pass) || existing.passwordHash === btoa(rawPass);
+                } catch (e) {}
+
+                if (!isDirectMatch && !isLegacyMatch && existing.passwordHash) {
+                    logSecurityEvent('Failed User Login', email, email);
+                    await saveState();
+                    showToast('পাসওয়ার্ড সঠিক নয়। আবার চেষ্টা করুন।', 'error');
+                    return;
+                }
+                existing.passwordHash = hashed;
+                await saveState();
+                completeUserLogin(existing.email, existing.name, existing.phone);
+            } else {
+                appState.accounts.push({
+                    email,
+                    name: email.split('@')[0],
+                    phone: '',
+                    passwordHash: hashed,
+                    createdAt: new Date().toISOString()
+                });
+                await saveState();
+                completeUserLogin(email, email.split('@')[0], '');
+            }
+        };
+
+        window.completeUserLogin = async function (email, name, phone) {
+            const cleanEmail = email.trim().toLowerCase();
+            const cleanName = name || cleanEmail.split('@')[0];
+            const dev = await detectClientDeviceInfo();
+            const loginTimeStr = new Date().toLocaleString('bn-BD');
+
+            let cust = appState.customers.find(c => c.email === cleanEmail);
+            if (!cust) {
+                cust = {
+                    id: 'cust-' + Date.now(),
+                    name: cleanName,
+                    email: cleanEmail,
+                    phone: phone || '—',
+                    address: '—',
+                    pkgSpeed: 0,
+                    balance: 0,
+                    status: 'Inactive',
+                    expiry: '',
+                    deviceModel: dev.deviceModel,
+                    osInfo: dev.osInfo,
+                    lastLogin: loginTimeStr
+                };
+                appState.customers.unshift(cust);
+            } else {
+                if (cust.balance === undefined || cust.balance === null) cust.balance = 0;
+                if (name && (!cust.name || cust.name === cleanEmail.split('@')[0])) {
+                    cust.name = cleanName;
+                }
+                if (phone) cust.phone = phone;
+                cust.deviceModel = dev.deviceModel;
+                cust.osInfo = dev.osInfo;
+                cust.lastLogin = loginTimeStr;
+            }
+
+            logSecurityEvent('User Login', `${cleanEmail} (${dev.deviceModel})`, cleanEmail);
+            await saveState();
+
+            currentUser = {
+                email: cleanEmail,
+                name: cust.name || cleanName,
+                phone: phone || (cust.phone !== '—' ? cust.phone : '')
+            };
+            rememberDeviceGmail(cleanEmail, currentUser.name);
+            currentRoute = 'main';
+            currentAppTab = 'home';
+            renderRoute();
+            measureLivePing();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showToast(`লগইন সফল (${cleanEmail})!`, 'success');
+        };
+
+        window.logoutCustomer = function () {
+            if (auth && auth.currentUser) auth.signOut();
+            currentUser = null;
+            currentRoute = 'login';
+            renderRoute();
+            showToast('নিরাপদে লগআউট করা হয়েছে।', 'info');
+        };
+
+        window.switchAppTab = function (tabName) {
+            currentAppTab = tabName;
+            document.querySelectorAll('.app-tab-view').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`app-tab-${tabName}`).classList.remove('hidden');
+
+            document.querySelectorAll('.app-nav-btn').forEach(btn => {
+                if (btn.dataset.appTab === tabName) {
+                    btn.className = 'app-nav-btn flex flex-col items-center justify-center gap-1 text-cyber-glow';
+                } else {
+                    btn.className = 'app-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-white';
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        function renderRoute() {
+            const viewLogin = document.getElementById('view-login');
+            const viewMain = document.getElementById('view-main-panel');
+            const viewAdmin = document.getElementById('view-admin');
+            const userControls = document.getElementById('header-user-controls');
+            const bottomNav = document.getElementById('app-bottom-nav');
+
+            viewLogin.classList.add('hidden');
+            viewMain.classList.add('hidden');
+            viewAdmin.classList.add('hidden');
+            bottomNav.classList.add('hidden');
+
+            if (currentUser) {
+                userControls.classList.remove('hidden');
+                userControls.classList.add('flex');
+                document.getElementById('header-user-gmail').textContent = currentUser.email;
+            } else {
+                userControls.classList.add('hidden');
+                userControls.classList.remove('flex');
+            }
+
+            if (currentRoute === 'admin' && isAdminAuthenticated) {
+                viewAdmin.classList.remove('hidden');
+                renderAdminDashboard();
+            } else if (currentUser && currentRoute === 'main') {
+                viewMain.classList.remove('hidden');
+                bottomNav.classList.remove('hidden');
+                switchAppTab(currentAppTab);
+                renderMainPanel();
+            } else {
+                currentRoute = 'login';
+                viewLogin.classList.remove('hidden');
+            }
+        }
+
+        function renderMainPanel() {
+            if (!currentUser) return;
+            document.getElementById('panel-user-gmail').textContent = currentUser.email;
+            document.getElementById('panel-user-name').textContent = currentUser.name;
+
+            document.getElementById('profile-avatar-letter').textContent = (currentUser.name || 'U')[0].toUpperCase();
+            document.getElementById('profile-full-name').textContent = currentUser.name;
+            document.getElementById('profile-email-text').textContent = currentUser.email;
+            document.getElementById('profile-phone-text').textContent = currentUser.phone || 'যুক্ত করা হয়নি';
+
+            const nameInput = document.getElementById('order-customer-name');
+            const phoneInput = document.getElementById('order-contact-phone');
+            if (!nameInput.value) nameInput.value = currentUser.name;
+            if (!phoneInput.value && currentUser.phone) phoneInput.value = currentUser.phone;
+
+            document.getElementById('display-bkash-num').textContent = appState.owner.bkashNum || '01324214887';
+            document.getElementById('display-nagad-num').textContent = appState.owner.nagadNum || '01324214887';
+            document.getElementById('display-rocket-num').textContent = appState.owner.rocketNum || '013242148879';
+
+            const gwSelect = document.getElementById('order-gateway-select');
+            gwSelect.innerHTML = `
+                <option value="bKash">bKash (${escapeHTML(appState.owner.bkashNum || '01324214887')})</option>
+                <option value="Nagad">Nagad (${escapeHTML(appState.owner.nagadNum || '01324214887')})</option>
+                <option value="Rocket">Rocket (${escapeHTML(appState.owner.rocketNum || '013242148879')})</option>
+            `;
+
+            renderUserSubscriptionStatus();
+            renderPackagesGrid();
+            populateOrderPackageSelect();
+            renderUserOrdersHistory();
+        }
+
+        function generateNumericSubscriberId(sub) {
+            if (sub && sub.subscriberNumericId) return sub.subscriberNumericId;
+            const raw = (sub && sub.id ? sub.id : currentUser?.email || '481817');
+            let hash = 0;
+            for (let i = 0; i < raw.length; i++) {
+                hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+                hash |= 0;
+            }
+            const sixDigit = String(100000 + (Math.abs(hash) % 900000));
+            if (sub) sub.subscriberNumericId = sixDigit;
+            return sixDigit;
+        }
+
+        function formatValidTillMonthYear(expiryStr) {
+            if (!expiryStr) return 'No Active Plan';
+            const d = new Date(expiryStr + 'T00:00:00');
+            if (Number.isNaN(d.getTime())) return expiryStr;
+            return d.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        function renderUserSubscriptionStatus() {
+            const sub = appState.customers.find(c => c.email === currentUser.email);
+            const idEl = document.getElementById('panel-subscriber-id');
+            const monthlyEl = document.getElementById('panel-monthly-fee');
+            const pkgEl = document.getElementById('panel-package-name');
+            const validTillEl = document.getElementById('panel-valid-till');
+            const remDaysEl = document.getElementById('panel-remaining-days');
+            const balEl = document.getElementById('panel-available-balance');
+            const statusPill = document.getElementById('panel-status-pill');
+
+            const numericId = generateNumericSubscriberId(sub);
+            if (idEl) idEl.textContent = numericId;
+
+            const activeOrPendingSpeed = (sub && sub.pkgSpeed) ? Number(sub.pkgSpeed) : (sub && sub.pendingPkgSpeed ? Number(sub.pendingPkgSpeed) : 0);
+            const pkgObj = activeOrPendingSpeed
+                ? appState.packages.find(p => Number(p.speed) === activeOrPendingSpeed)
+                : null;
+            const monthlyFee = pkgObj ? Number(pkgObj.price) : 0;
+
+            if (monthlyEl) monthlyEl.textContent = `${monthlyFee.toLocaleString()} Taka`;
+            if (pkgEl) {
+                pkgEl.textContent = (sub && sub.pkgSpeed)
+                    ? `${sub.pkgSpeed} Mbps Fiber`
+                    : 'Default service';
+            }
+
+            const isActiveSub = Boolean(sub && sub.status === 'Active');
+            let daysLeft = 0;
+            if (isActiveSub) {
+                if (typeof sub.remainingDays === 'number') {
+                    daysLeft = Math.max(0, sub.remainingDays);
+                } else if (sub.expiry) {
+                    daysLeft = Math.max(0, Math.ceil((new Date(sub.expiry + 'T23:59:59') - new Date()) / (1000 * 60 * 60 * 24)));
+                } else {
+                    daysLeft = 30;
+                }
+            }
+
+            const livePillEl = document.getElementById('panel-live-countdown-pill');
+            const liveStr = isActiveSub ? formatLiveCountdownBN(Math.max(0, getCustomerExpiryTimestamp(sub) - Date.now())) : 'No Active Plan';
+            if (validTillEl) validTillEl.textContent = (isActiveSub && sub.expiry) ? formatValidTillMonthYear(sub.expiry) : 'No Active Plan';
+            if (remDaysEl) remDaysEl.textContent = isActiveSub ? liveStr : '0 দিন 00:00:00';
+            if (livePillEl) livePillEl.textContent = liveStr;
+            if (balEl) balEl.textContent = String(sub && sub.balance !== undefined ? Number(sub.balance).toLocaleString() : 0);
+            syncExpiryBanner(sub);
+            if (isActiveSub && daysLeft <= 2 && daysLeft > 0) {
+                triggerTwoDayExpiryNotification(sub, daysLeft);
+            }
+
+            if (statusPill) {
+                const st = sub ? sub.status : 'Inactive';
+                statusPill.textContent = st;
+                statusPill.className = st === 'Active'
+                    ? 'px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40'
+                    : 'px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-slate-700/80 text-slate-300 border border-slate-500/40';
+            }
+
+            const historyBody = document.getElementById('home-payment-history-body');
+            if (historyBody) {
+                const mine = appState.payments.filter(p => p.email === currentUser.email);
+                if (!mine.length) {
+                    historyBody.innerHTML = `
+                        <tr>
+                            <td colspan="3" class="py-5 px-6 text-slate-500 text-sm">No data available in table</td>
+                        </tr>
+                    `;
+                } else {
+                    historyBody.innerHTML = mine.map(p => `
+                        <tr onclick="openDigitalInvoice('${escapeHTML(p.id)}')" class="hover:bg-slate-50 cursor-pointer transition">
+                            <td class="py-3.5 px-6 font-mono font-bold text-slate-900">
+                                <div>${escapeHTML(p.trxid)}</div>
+                                <div class="text-[11px] font-sans font-normal text-slate-500">${escapeHTML(p.gateway)} • ${escapeHTML(p.date)}</div>
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <div class="font-bold text-slate-900">${escapeHTML(p.speed)} Mbps</div>
+                                <div class="text-xs text-slate-600">${escapeHTML(p.amount)} Taka${p.status === 'Approved' && p.validUntil ? ' • Valid till ' + escapeHTML(p.validUntil) : ''}</div>
+                            </td>
+                            <td class="py-3.5 px-6 text-right">
+                                <span class="inline-block px-2.5 py-1 rounded-full text-xs font-extrabold ${
+                                    p.status === 'Approved' ? 'bg-emerald-100 text-emerald-800' :
+                                    p.status === 'Rejected' ? 'bg-rose-100 text-rose-800' :
+                                    'bg-amber-100 text-amber-800'
+                                }">${escapeHTML(p.status === 'Pending' ? 'Verifying...' : p.status)}</span>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            }
+        }
+
+        function renderPackagesGrid() {
+            const grid = document.getElementById('packages-grid');
+            const sorted = [...appState.packages].sort((a, b) => Number(a.speed) - Number(b.speed));
+
+            grid.innerHTML = sorted.map(pkg => `
+                <div class="rounded-2xl p-5 flex flex-col justify-between ${pkg.popular ? 'popular-card' : 'glass-card'}">
+                    <div>
+                        ${pkg.popular
+                            ? `<span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-cyber-glow text-space-950 mb-3">সবচেয়ে জনপ্রিয়</span>`
+                            : `<div class="h-5 mb-2"></div>`}
+
+                        <div class="flex items-center justify-between">
+                            <span class="font-display text-2xl sm:text-3xl font-black text-white">${escapeHTML(pkg.speed)} <span class="text-sm text-cyber-glow">Mbps</span></span>
+                            <i class="fa-solid fa-wifi text-cyber-glow"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1">${escapeHTML(pkg.desc || 'আনলিমিটেড ফাইবার ইন্টারনেট')}</p>
+
+                        <div class="my-4 py-3 border-y border-slate-800">
+                            <span class="font-display text-3xl font-extrabold text-cyber-glow">৳${escapeHTML(pkg.price)}</span>
+                            <span class="text-xs text-slate-400"> / মাস</span>
+                        </div>
+
+                        <ul class="space-y-1.5 text-xs text-slate-300 mb-5">
+                            <li><i class="fa-solid fa-check text-cyber-glow mr-1.5"></i> আনলিমিটেড ডেটা</li>
+                            <li><i class="fa-solid fa-check text-cyber-glow mr-1.5"></i> স্থিতিশীল স্পিড</li>
+                            <li><i class="fa-solid fa-check text-cyber-glow mr-1.5"></i> ২৪/৭ সাপোর্ট</li>
+                        </ul>
+                    </div>
+
+                    <button type="button" onclick="selectPackageForOrder('${escapeHTML(pkg.id)}')" class="w-full py-2.5 px-4 rounded-xl text-xs font-extrabold transition ${
+                        pkg.popular
+                            ? 'bg-gradient-to-r from-cyber-blue to-cyber-glow text-space-950 shadow-cyber'
+                            : 'bg-space-800 hover:bg-cyber-glow hover:text-space-950 border border-cyber-cyan/35 text-cyan-200'
+                    }">
+                        প্যাকেজটি নিন
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function populateOrderPackageSelect(selectedId = null) {
+            const sel = document.getElementById('order-package-select');
+            const sorted = [...appState.packages].sort((a, b) => Number(a.speed) - Number(b.speed));
+            sel.innerHTML = sorted.map(p =>
+                `<option value="${escapeHTML(p.id)}" data-price="${escapeHTML(p.price)}" data-speed="${escapeHTML(p.speed)}" ${p.id === selectedId ? 'selected' : ''}>${escapeHTML(p.speed)} Mbps — ৳${escapeHTML(p.price)} / মাস</option>`
+            ).join('');
+            syncOrderAmount();
+        }
+
+        window.selectPackageForOrder = function (pkgId) {
+            populateOrderPackageSelect(pkgId);
+            document.getElementById('section-order-form').scrollIntoView({ behavior: 'smooth' });
+            showToast('প্যাকেজ সিলেক্ট হয়েছে! পেমেন্ট করে TrxID দিন।', 'info');
+        };
+
+        window.syncOrderAmount = function () {
+            const sel = document.getElementById('order-package-select');
+            const opt = sel.options[sel.selectedIndex];
+            if (opt) {
+                document.getElementById('order-amount').value = opt.dataset.price || 150;
+            }
+        };
+
+        window.copyGatewayNumber = function (gateway) {
+            const num = gateway === 'bKash'
+                ? (appState.owner.bkashNum || '01324214887')
+                : gateway === 'Nagad'
+                ? (appState.owner.nagadNum || '01324214887')
+                : (appState.owner.rocketNum || '013242148879');
+            copyText(num, `${gateway} নম্বর (${num}) কপি করা হয়েছে!`);
+        };
+
+        window.launchPaymentApp = function (gateway) {
+            copyGatewayNumber(gateway);
+            const schemes = {
+                bKash: { uri: 'bkash://', intent: 'intent://#Intent;package=com.bKash.customerapp;scheme=bkash;end' },
+                Nagad: { uri: 'nagad://', intent: 'intent://#Intent;package=com.konasl.nagad;scheme=nagad;end' },
+                Rocket: { uri: 'rocket://', intent: 'intent://#Intent;package=com.dbbl.mbs.apps.main;scheme=rocket;end' }
+            };
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            try {
+                window.location.href = isAndroid ? schemes[gateway].intent : schemes[gateway].uri;
+            } catch (e) {
+                console.warn(e);
+            }
+        };
+
+        window.submitCustomerOrder = async function (e) {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const customerName = document.getElementById('order-customer-name').value.trim();
+            const contactPhone = document.getElementById('order-contact-phone').value.trim();
+            const sel = document.getElementById('order-package-select');
+            const opt = sel.options[sel.selectedIndex];
+            const speed = Number(opt?.dataset.speed || 5);
+            const amount = Number(document.getElementById('order-amount').value);
+            const gateway = document.getElementById('order-gateway-select').value;
+            const senderPhone = document.getElementById('order-sender-phone').value.trim();
+            const trxid = document.getElementById('order-trxid').value.trim().toUpperCase();
+            const address = document.getElementById('order-address').value.trim();
+
+            if (!/^01[3-9][0-9]{8}$/.test(contactPhone) || !/^01[3-9][0-9]{8}$/.test(senderPhone)) {
+                showToast('সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন (01XXXXXXXXX)।', 'error');
+                return;
+            }
+
+            if (!/^[A-Z0-9]{6,25}$/.test(trxid)) {
+                showToast('সঠিক Transaction ID (৬–২৫ অক্ষর/সংখ্যা) লিখুন।', 'error');
+                return;
+            }
+
+            if (appState.payments.some(p => p.trxid === trxid)) {
+                showToast(`TrxID ${trxid} ইতিমধ্যে জমা দেওয়া হয়েছে।`, 'error');
+                return;
+            }
+
+            const dev = await detectClientDeviceInfo();
+            let cust = appState.customers.find(c => c.email === currentUser.email);
+            if (!cust) {
+                cust = {
+                    id: 'cust-' + Date.now(),
+                    name: customerName || currentUser.name,
+                    email: currentUser.email,
+                    phone: contactPhone,
+                    address: address || '—',
+                    pkgSpeed: 0,
+                    pendingPkgSpeed: speed,
+                    balance: 0,
+                    status: 'Inactive',
+                    expiry: '',
+                    deviceModel: dev.deviceModel,
+                    osInfo: dev.osInfo,
+                    lastLogin: new Date().toLocaleString('bn-BD')
+                };
+                appState.customers.unshift(cust);
+            } else {
+                cust.name = customerName || cust.name;
+                cust.phone = contactPhone;
+                if (address) cust.address = address;
+                cust.pendingPkgSpeed = speed;
+                if (cust.balance === undefined) cust.balance = 0;
+                cust.deviceModel = dev.deviceModel;
+                cust.osInfo = dev.osInfo;
+            }
+
+            appState.payments.unshift({
+                id: 'pay-' + Date.now(),
+                customerId: cust.id,
+                name: customerName || currentUser.name,
+                email: currentUser.email,
+                contactPhone,
+                senderPhone,
+                gateway,
+                trxid,
+                speed,
+                amount,
+                deviceModel: dev.deviceModel,
+                status: 'Pending',
+                date: new Date().toLocaleDateString('bn-BD')
+            });
+
+            logSecurityEvent('Payment Submitted', `${currentUser.email} • ${trxid}`, currentUser.email);
+            await saveState();
+            document.getElementById('order-trxid').value = '';
+            renderMainPanel();
+            switchAppTab('orders');
+            showToast(`পেমেন্ট জমা হয়েছে (${gateway} • ${trxid})!`, 'success');
+        };
+
+        function renderUserOrdersHistory() {
+            const box = document.getElementById('user-orders-list');
+            const mine = appState.payments.filter(p => p.email === currentUser.email);
+
+            if (!mine.length) {
+                box.innerHTML = `<p class="text-slate-500 py-6 text-center">এখনো কোনো পেমেন্ট বা অর্ডার জমা দেওয়া হয়নি।</p>`;
+                return;
+            }
+
+            box.innerHTML = mine.map(p => `
+                <div class="p-4 rounded-2xl bg-space-950/90 border border-slate-800 flex items-center justify-between gap-3">
+                    <div class="space-y-1">
+                        <p class="font-bold text-white text-sm">${escapeHTML(p.speed)} Mbps • ৳${escapeHTML(p.amount)} <span class="text-cyan-300">(${escapeHTML(p.gateway)})</span></p>
+                        <p class="font-mono text-[11px] text-slate-400">TrxID: ${escapeHTML(p.trxid)} • ${escapeHTML(p.date)}</p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                            p.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-300' :
+                            p.status === 'Rejected' ? 'bg-rose-500/20 text-rose-300' :
+                            'bg-amber-500/20 text-amber-300'
+                        }">${escapeHTML(p.status)}</span>
+                        <button type="button" onclick="openDigitalInvoice('${escapeHTML(p.id)}')" class="px-2.5 py-1.5 rounded-xl bg-space-800 hover:bg-space-700 text-cyan-200 font-bold text-[11px]">
+                            <i class="fa-solid fa-file-invoice"></i> রসিদ
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.openDigitalInvoice = function (payId) {
+            const p = appState.payments.find(x => x.id === payId);
+            if (!p) return;
+            const content = document.getElementById('invoice-modal-content');
+            content.innerHTML = `
+                <div class="text-center border-b border-slate-800 pb-4">
+                    <div class="font-display font-black text-xl text-white">IOT <span class="text-cyber-glow">WiFi</span></div>
+                    <p class="text-[11px] text-slate-400">ডিজিটাল পেমেন্ট রসিদ • Digital Receipt</p>
+                </div>
+                <div class="space-y-2.5">
+                    <div class="flex justify-between"><span class="text-slate-400">রসিদ আইডি:</span><span class="font-mono text-white">${escapeHTML(p.id.toUpperCase())}</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">গ্রাহক:</span><span class="font-bold text-white">${escapeHTML(p.name)}</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Gmail:</span><span class="font-mono text-cyan-300">${escapeHTML(p.email)}</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">প্যাকেজ:</span><span class="font-bold text-white">${escapeHTML(p.speed)} Mbps (৩০ দিন)</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">মাধ্যম ও TrxID:</span><span class="font-mono text-white">${escapeHTML(p.gateway)} • ${escapeHTML(p.trxid)}</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">তারিখ:</span><span class="text-white">${escapeHTML(p.date)}</span></div>
+                    <div class="flex justify-between pt-2 border-t border-slate-800 text-sm">
+                        <span class="font-bold text-slate-300">মোট পরিশোধ:</span>
+                        <span class="font-display font-extrabold text-cyber-glow">৳${escapeHTML(p.amount)}</span>
+                    </div>
+                </div>
+                <div class="pt-2 text-center">
+                    <span class="inline-block px-4 py-1.5 rounded-full font-extrabold ${
+                        p.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'
+                    }">স্ট্যাটাস: ${escapeHTML(p.status)}</span>
+                </div>
+            `;
+            openModal('modal-invoice');
+        };
+
+        async function measureLivePing() {
+            const start = performance.now();
+            try {
+                await fetch('https://www.gstatic.com/generate_204', { mode: 'no-cors', cache: 'no-store' });
+                const ms = Math.max(8, Math.round(performance.now() - start));
+                const el = document.getElementById('live-ping-ms');
+                if (el) el.textContent = `${ms} ms`;
+                return ms;
+            } catch {
+                return 24;
+            }
+        }
+
+        window.runLiveSpeedTest = async function () {
+            const btn = document.getElementById('btn-run-speedtest');
+            const mbpsEl = document.getElementById('speedtest-mbps');
+            const pingEl = document.getElementById('speedtest-ping');
+            const jitterEl = document.getElementById('speedtest-jitter');
+            const statusEl = document.getElementById('speedtest-status');
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            statusEl.textContent = 'Testing...';
+
+            const p1 = await measureLivePing();
+            const p2 = await measureLivePing();
+            pingEl.textContent = `${p1} ms`;
+            jitterEl.textContent = `${Math.abs(p1 - p2) + 2} ms`;
+
+            const sub = appState.customers.find(c => c.email === currentUser?.email);
+            const targetSpeed = (sub && sub.status === 'Active' && sub.pkgSpeed) ? Number(sub.pkgSpeed) : 10;
+
+            let step = 0;
+            const interval = setInterval(() => {
+                step += 1;
+                const progress = Math.min(1, step / 22);
+                const jitter = (Math.random() - 0.45) * 1.4;
+                const currentVal = Math.max(0.5, (targetSpeed * progress + jitter)).toFixed(1);
+                mbpsEl.textContent = currentVal;
+
+                if (step >= 22) {
+                    clearInterval(interval);
+                    mbpsEl.textContent = (targetSpeed - 0.2 + Math.random() * 0.5).toFixed(1);
+                    statusEl.textContent = p1 < 55 ? 'Excellent (Low Ping)' : 'Stable';
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
+                    showToast('স্পিড টেস্ট সম্পন্ন হয়েছে!', 'success');
+                }
+            }, 90);
+        };
+
+        window.openAdminGate = function () {
+            if (isAdminAuthenticated) {
+                currentRoute = 'admin';
+                renderRoute();
+                return;
+            }
+            if (!appState.owner.setupDone || !appState.owner.passwordHash) {
+                openModal('modal-admin-setup');
+            } else {
+                checkAdminLockout();
+                openModal('modal-admin-login');
+            }
+        };
+
+        window.completeAdminSetup = async function (e) {
+            e.preventDefault();
+            const ownerName = document.getElementById('setup-owner-name').value.trim().toLowerCase();
+            const pass = document.getElementById('setup-owner-pass').value;
+            if (!ownerName || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ownerName)) {
+                showToast('সঠিক Admin Gmail অ্যাড্রেস দিন (যেমন: owner@gmail.com)।', 'error');
+                return;
+            }
+            const passHash = await hashPasswordSHA256(pass);
+
+            appState.owner.setupDone = true;
+            appState.owner.ownerName = ownerName;
+            appState.owner.passwordHash = passHash;
+            appState.owner.authorizedAdmins = [{
+                email: ownerName,
+                passwordHash: passHash,
+                addedAt: new Date().toISOString()
+            }];
+
+            logSecurityEvent('Admin Setup Completed', ownerName);
+            await saveState();
+            isAdminAuthenticated = true;
+            activeAdminSessionEmail = ownerName;
+            currentRoute = 'admin';
+            closeModal('modal-admin-setup');
+            renderRoute();
+            showToast('প্রথম Admin Gmail লক ও সেভ হয়েছে (SHA-256 সুরক্ষিত)!', 'success');
+        };
+
+        function checkAdminLockout() {
+            const msg = document.getElementById('admin-lockout-msg');
+            const btn = document.getElementById('admin-login-submit');
+            const now = Date.now();
+            if (lockedUntil > now) {
+                const sec = Math.ceil((lockedUntil - now) / 1000);
+                msg.classList.remove('hidden');
+                msg.textContent = `অনেকবার ভুল পাসওয়ার্ড দেওয়ায় ${sec} সেকেন্ডের জন্য লক করা হয়েছে।`;
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+            } else {
+                msg.classList.add('hidden');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            }
+        }
+
+        async function verifyStoredPassword(pass, hashed, storedHash, legacyPlain = '') {
+            if (!pass) return false;
+            const normStored = String(storedHash || '').trim().toLowerCase();
+            const normHashed = String(hashed || '').trim().toLowerCase();
+            if (normStored && normHashed && normHashed === normStored) return true;
+            if (legacyPlain && (pass === legacyPlain || pass.toLowerCase() === String(legacyPlain).toLowerCase())) return true;
+            if (normStored && normStored.length < 64) {
+                try {
+                    if (pass === atob(normStored)) return true;
+                } catch {}
+            }
+            try {
+                const enc = new TextEncoder();
+                const buf = await crypto.subtle.digest('SHA-256', enc.encode(pass));
+                const unsaltedHex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+                if (normStored && unsaltedHex === normStored) return true;
+            } catch {}
+            return false;
+        }
+
+        window.verifyAdminLogin = async function (e) {
+            e.preventDefault();
+            if (lockedUntil > Date.now()) {
+                checkAdminLockout();
+                return;
+            }
+            const inputEmail = document.getElementById('admin-login-email').value.trim().toLowerCase();
+            const rawPass = document.getElementById('admin-login-pass').value;
+            const pass = rawPass.trim();
+            const lowerPass = pass.toLowerCase();
+            const hashed = await hashPasswordSHA256(pass);
+            const lowerHashed = lowerPass !== pass ? await hashPasswordSHA256(lowerPass) : hashed;
+            const rawHashed = rawPass !== pass ? await hashPasswordSHA256(rawPass) : hashed;
+
+            if (!inputEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputEmail)) {
+                showToast('সঠিক Admin Gmail অ্যাড্রেস লিখুন (যেমন: owner@gmail.com)।', 'error');
+                return;
+            }
+
+            try {
+                const diskRaw = localStorage.getItem(STORAGE_KEY);
+                if (diskRaw) {
+                    const diskParsed = JSON.parse(diskRaw);
+                    if (diskParsed && diskParsed.owner) {
+                        if (!appState.owner.ownerName && diskParsed.owner.ownerName) {
+                            appState.owner.ownerName = diskParsed.owner.ownerName;
+                        }
+                        if (!appState.owner.passwordHash && diskParsed.owner.passwordHash) {
+                            appState.owner.passwordHash = diskParsed.owner.passwordHash;
+                        }
+                        if ((!appState.owner.authorizedAdmins || !appState.owner.authorizedAdmins.length) && Array.isArray(diskParsed.owner.authorizedAdmins)) {
+                            appState.owner.authorizedAdmins = diskParsed.owner.authorizedAdmins;
+                        }
+                    }
+                }
+            } catch (err) {}
+
+            let lockedOwnerEmail = (appState.owner.ownerName || '').trim().toLowerCase();
+            const matchedAuthAdmin = Array.isArray(appState.owner.authorizedAdmins)
+                ? appState.owner.authorizedAdmins.find(a => (a.email || '').toLowerCase() === (lockedOwnerEmail || inputEmail))
+                : null;
+            const candidateHash = appState.owner.passwordHash || (matchedAuthAdmin && matchedAuthAdmin.passwordHash) || '';
+
+            if (!lockedOwnerEmail && !candidateHash) {
+                if (!pass || pass.length < 4) {
+                    showToast('পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে।', 'error');
+                    return;
+                }
+                appState.owner.setupDone = true;
+                appState.owner.ownerName = inputEmail;
+                appState.owner.passwordHash = hashed;
+                appState.owner.authorizedAdmins = [{
+                    email: inputEmail,
+                    passwordHash: hashed,
+                    addedAt: new Date().toISOString()
+                }];
+                failedAttempts = 0;
+                lockedUntil = 0;
+                isAdminAuthenticated = true;
+                activeAdminSessionEmail = inputEmail;
+                currentRoute = 'admin';
+                document.getElementById('admin-login-email').value = '';
+                document.getElementById('admin-login-pass').value = '';
+                logSecurityEvent('First Admin Gmail Locked', inputEmail);
+                await saveState();
+                closeModal('modal-admin-login');
+                renderRoute();
+                showToast(`${inputEmail} প্রথম Admin Gmail হিসেবে লক হয়েছে! এখন শুধু এই Gmail দিয়েই লগইন হবে।`, 'success');
+                return;
+            }
+
+            if (!lockedOwnerEmail && matchedAuthAdmin) {
+                lockedOwnerEmail = (matchedAuthAdmin.email || '').toLowerCase();
+                appState.owner.ownerName = lockedOwnerEmail;
+            }
+
+            if (lockedOwnerEmail && inputEmail !== lockedOwnerEmail) {
+                failedAttempts += 1;
+                logSecurityEvent('Blocked Unauthorized Gmail', `Attempt ${failedAttempts}/5 (${inputEmail})`);
+                saveState();
+                if (failedAttempts >= 5) {
+                    lockedUntil = Date.now() + 60000;
+                    failedAttempts = 0;
+                } else {
+                    showToast(`অননুমোদিত Gmail! শুধু লক করা Admin Gmail (${lockedOwnerEmail}) দিয়েই প্রবেশ করা যাবে (${failedAttempts}/5)`, 'error');
+                }
+                checkAdminLockout();
+                return;
+            }
+
+            const isPassValid =
+                (await verifyStoredPassword(pass, hashed, candidateHash, appState.owner.password || '')) ||
+                (await verifyStoredPassword(lowerPass, lowerHashed, candidateHash, appState.owner.password || '')) ||
+                (await verifyStoredPassword(rawPass, rawHashed, candidateHash, appState.owner.password || ''));
+
+            if (isPassValid) {
+                appState.owner.setupDone = true;
+                appState.owner.ownerName = lockedOwnerEmail || inputEmail;
+                appState.owner.passwordHash = hashed;
+                if (appState.owner.password) delete appState.owner.password;
+                failedAttempts = 0;
+                lockedUntil = 0;
+                isAdminAuthenticated = true;
+                activeAdminSessionEmail = appState.owner.ownerName;
+                currentRoute = 'admin';
+                document.getElementById('admin-login-email').value = '';
+                document.getElementById('admin-login-pass').value = '';
+                logSecurityEvent('Admin Unlocked', appState.owner.ownerName);
+                saveState();
+                closeModal('modal-admin-login');
+                renderRoute();
+                showToast('Admin Panel আনলক হয়েছে।', 'success');
+            } else {
+                failedAttempts += 1;
+                logSecurityEvent('Failed Admin Attempt', `Attempt ${failedAttempts}/5 (${inputEmail})`);
+                saveState();
+                if (failedAttempts >= 5) {
+                    lockedUntil = Date.now() + 60000;
+                    failedAttempts = 0;
+                } else {
+                    showToast(`পাসওয়ার্ড সঠিক নয়! লক করা Admin Gmail: ${lockedOwnerEmail || inputEmail} (${failedAttempts}/5)`, 'error');
+                }
+                checkAdminLockout();
+            }
+        };
+
+        window.resetAdminPasswordWithGmail = async function () {
+            const inputEmail = (document.getElementById('admin-login-email').value || appState.owner.ownerName || '').trim().toLowerCase();
+            const rawPass = document.getElementById('admin-login-pass').value;
+            const pass = rawPass.trim();
+            const lockedOwnerEmail = (appState.owner.ownerName || '').trim().toLowerCase();
+
+            if (!inputEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputEmail)) {
+                showToast('আগে উপরে আপনার Admin Gmail লিখুন।', 'error');
+                return;
+            }
+            if (lockedOwnerEmail && inputEmail !== lockedOwnerEmail) {
+                showToast(`শুধু লক করা Admin Gmail (${lockedOwnerEmail}) দিয়েই পাসওয়ার্ড রিসেট করা যাবে।`, 'error');
+                return;
+            }
+            if (!pass || pass.length < 4) {
+                showToast('নতুন পাসওয়ার্ড বক্সে কমপক্ষে ৪ অক্ষরের পাসওয়ার্ড লিখুন, তারপর এই বাটন চাপুন।', 'error');
+                return;
+            }
+
+            const newHash = await hashPasswordSHA256(pass);
+            appState.owner.setupDone = true;
+            appState.owner.ownerName = inputEmail;
+            appState.owner.passwordHash = newHash;
+            delete appState.owner.password;
+            appState.owner.authorizedAdmins = [{
+                email: inputEmail,
+                passwordHash: newHash,
+                addedAt: new Date().toISOString()
+            }];
+
+            failedAttempts = 0;
+            lockedUntil = 0;
+            isAdminAuthenticated = true;
+            activeAdminSessionEmail = inputEmail;
+            currentRoute = 'admin';
+            document.getElementById('admin-login-pass').value = '';
+            logSecurityEvent('Admin Password Reset & Unlocked', inputEmail);
+            await saveState();
+            closeModal('modal-admin-login');
+            renderRoute();
+            showToast('নতুন পাসওয়ার্ড সেট হয়েছে এবং Admin Panel আনলক হয়েছে!', 'success');
+        };
+
+        window.exitAdminToUserView = function () {
+            currentRoute = currentUser ? 'main' : 'login';
+            renderRoute();
+        };
+
+        window.lockAdminPanel = function () {
+            isAdminAuthenticated = false;
+            currentRoute = currentUser ? 'main' : 'login';
+            renderRoute();
+            showToast('Admin Panel লক করা হয়েছে।', 'info');
+        };
+
+        window.switchAdminSection = function (sec) {
+            document.querySelectorAll('.admin-sec').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`admin-sec-${sec}`).classList.remove('hidden');
+
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+                if (btn.dataset.adminTab === sec) {
+                    btn.className = 'admin-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-cyber-glow text-space-950';
+                } else {
+                    btn.className = 'admin-tab-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-space-800 text-slate-300 hover:bg-space-700';
+                }
+            });
+        };
+
+        function renderAdminDashboard() {
+            document.getElementById('admin-owner-label').textContent = appState.owner.ownerName || activeAdminSessionEmail || 'Owner';
+            const countEl = document.getElementById('admin-list-count');
+            if (countEl) countEl.textContent = 'Single Gmail Lock';
+
+            const approved = appState.payments.filter(p => p.status === 'Approved');
+            const totalRev = approved.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+            const totalCustomers = appState.customers.length;
+            const pendingCount = appState.payments.filter(p => p.status === 'Pending').length;
+
+            document.getElementById('stat-total-revenue').textContent = `৳${totalRev.toLocaleString()}`;
+            document.getElementById('stat-active-users').textContent = totalCustomers;
+            document.getElementById('stat-pending-payments').textContent = pendingCount;
+
+            renderAdminPaymentsTable();
+            renderAdminCustomersTable();
+            renderAdminSettingsTab();
+            renderAdminSecurityLogs();
+        }
+
+        window.renderAdminPaymentsTable = function () {
+            const filter = document.getElementById('admin-pay-filter').value;
+            const rows = appState.payments.filter(p => filter === 'ALL' || p.status === filter);
+            const tbody = document.getElementById('admin-payments-body');
+
+            if (!rows.length) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-500">কোনো পেমেন্ট রেকর্ড নেই (0)</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = rows.map(p => `
+                <tr class="hover:bg-space-900/60">
+                    <td class="py-3 px-3 text-slate-400">${escapeHTML(p.date)}</td>
+                    <td class="py-3 px-3">
+                        <p class="font-bold text-white">${escapeHTML(p.name)}</p>
+                        <p class="font-mono text-[11px] text-cyan-300">${escapeHTML(p.email)}</p>
+                        ${p.deviceModel ? `<p class="text-[10px] text-emerald-300 mt-0.5"><i class="fa-solid fa-mobile-screen mr-1"></i>${escapeHTML(p.deviceModel)}</p>` : ''}
+                    </td>
+                    <td class="py-3 px-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold text-white ${
+                            p.gateway === 'bKash' ? 'brand-bkash' : p.gateway === 'Nagad' ? 'brand-nagad' : 'brand-rocket'
+                        }">${escapeHTML(p.gateway)}</span>
+                    </td>
+                    <td class="py-3 px-3 font-mono">
+                        <p class="text-slate-300">${escapeHTML(p.senderPhone)}</p>
+                        <p class="font-bold text-white">${escapeHTML(p.trxid)}</p>
+                    </td>
+                    <td class="py-3 px-3 font-bold text-cyber-glow">${escapeHTML(p.speed)} Mbps • ৳${escapeHTML(p.amount)}</td>
+                    <td class="py-3 px-3">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            p.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-300' :
+                            p.status === 'Rejected' ? 'bg-rose-500/20 text-rose-300' :
+                            'bg-amber-500/20 text-amber-300'
+                        }">${escapeHTML(p.status)}</span>
+                    </td>
+                    <td class="py-3 px-3 text-right whitespace-nowrap">
+                        ${p.status === 'Pending' ? `
+                            <button type="button" onclick="processPayment('${escapeHTML(p.id)}', 'Approved')" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] mr-1">Approve</button>
+                            <button type="button" onclick="processPayment('${escapeHTML(p.id)}', 'Rejected')" class="px-2.5 py-1 rounded bg-rose-600 hover:bg-rose-500 text-white font-bold text-[10px]">Reject</button>
+                        ` : `<span class="text-slate-500">${escapeHTML(p.status)}</span>`}
+                    </td>
+                </tr>
+            `).join('');
+        };
+
+        window.processPayment = async function (payId, decision) {
+            const p = appState.payments.find(x => x.id === payId);
+            if (!p) return;
+            if (p.status === 'Approved' && decision === 'Approved') {
+                showToast('এই পেমেন্টটি ইতিমধ্যে Approved করা হয়েছে এবং ব্যালেন্সে জমা হয়েছে।', 'info');
+                return;
+            }
+            p.status = decision;
+
+            if (decision === 'Approved') {
+                let c = appState.customers.find(x => x.email === p.email);
+                if (!c) {
+                    c = {
+                        id: 'cust-' + Date.now(),
+                        name: p.name || p.email.split('@')[0],
+                        email: p.email,
+                        phone: p.contactPhone || '—',
+                        address: '—',
+                        pkgSpeed: 0,
+                        pendingPkgSpeed: Number(p.speed || 0),
+                        balance: 0,
+                        status: 'Inactive',
+                        expiry: '',
+                        deviceModel: p.deviceModel || 'Web Device',
+                        osInfo: '',
+                        lastLogin: new Date().toLocaleString('bn-BD')
+                    };
+                    appState.customers.unshift(c);
+                }
+
+                const currentBal = Number(c.balance || 0);
+                const paidAmt = Number(p.amount || 0);
+
+                c.balance = currentBal + paidAmt;
+                if (p.speed) c.pendingPkgSpeed = Number(p.speed);
+                p.creditedToAccount = paidAmt;
+            }
+
+            logSecurityEvent(`Payment ${decision}`, `${p.email} • ${p.trxid} • ৳${p.amount}`, p.email);
+            await saveState();
+            renderAdminDashboard();
+            if (currentRoute === 'main') renderMainPanel();
+            showToast(
+                decision === 'Approved'
+                    ? `পেমেন্ট Approved! কাস্টমারের অ্যাকাউন্টে ৳${p.amount} জমা হয়েছে। এবার নেট চালু করার অনুমতি (Net Active) দিলে প্যাকেজ অনুযায়ী টাকা কেটে নেট চালু হবে।`
+                    : `পেমেন্ট Rejected করা হয়েছে।`,
+                decision === 'Approved' ? 'success' : 'info'
+            );
+        };
+
+        window.grantNetActivePermission = async function (customerId, optionalPkgSpeed = null) {
+            const c = appState.customers.find(x => x.id === customerId);
+            if (!c) return;
+
+            const targetSpeed = Number(optionalPkgSpeed || c.pendingPkgSpeed || c.pkgSpeed || 5);
+            const pkgObj = appState.packages.find(pkg => Number(pkg.speed) === targetSpeed)
+                || appState.packages.find(pkg => Number(pkg.speed) === 5)
+                || { speed: targetSpeed, price: 150 };
+
+            const pkgFee = Number(pkgObj.price || 0);
+            const currentBal = Number(c.balance || 0);
+
+            if (currentBal < pkgFee) {
+                showToast(
+                    `অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই! (${targetSpeed} Mbps প্যাকেজের জন্য ৳${pkgFee} প্রয়োজন, বর্তমানে আছে ৳${currentBal})`,
+                    'error'
+                );
+                return;
+            }
+
+            c.balance = currentBal - pkgFee;
+            c.pkgSpeed = Number(pkgObj.speed);
+            c.pendingPkgSpeed = Number(pkgObj.speed);
+            c.status = 'Active';
+            c.remainingDays = 30;
+
+            const now = new Date();
+            c.lastDayTickAt = now.getTime();
+            c.activationCycleId = (c.activationCycleId || 0) + 1;
+            c.lastNotifiedCycleKey = '';
+
+            const expTs = now.getTime() + THIRTY_DAYS_MS;
+            c.expiryTimestamp = expTs;
+            const expiryDate = new Date(expTs);
+
+            c.activatedAt = now.toISOString().split('T')[0];
+            c.expiry = expiryDate.toISOString().split('T')[0];
+
+            const latestApproved = appState.payments.find(p => p.email === c.email && p.status === 'Approved');
+            if (latestApproved) {
+                latestApproved.autoDeducted = pkgFee;
+                latestApproved.activatedFrom = c.activatedAt;
+                latestApproved.validUntil = c.expiry;
+            }
+
+            logSecurityEvent(
+                'Net Active Permission Granted',
+                `${c.email} • ${c.pkgSpeed}Mbps (-৳${pkgFee}) • Valid till ${c.expiry}`,
+                c.email
+            );
+            await saveState();
+            renderAdminDashboard();
+            if (currentRoute === 'main') renderMainPanel();
+            showToast(
+                `${c.name} এর নেট চালুর অনুমতি দেওয়া হয়েছে! অ্যাকাউন্ট থেকে ৳${pkgFee} কেটে আজ থেকে ৩০ দিনের জন্য নেট Active হয়েছে।`,
+                'success'
+            );
+        };
+
+        window.openIndividualCustomerDetail = function (customerId) {
+            const c = appState.customers.find(x => x.id === customerId);
+            if (!c) return;
+            const userPayments = appState.payments.filter(p => p.email === c.email);
+            const subId = generateNumericSubscriberId(c);
+
+            const body = document.getElementById('customer-detail-body');
+            body.innerHTML = `
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyber-blue to-cyber-glow text-space-950 font-display font-black text-lg flex items-center justify-center">
+                            ${escapeHTML((c.name || 'U')[0].toUpperCase())}
+                        </div>
+                        <div>
+                            <h3 class="text-base sm:text-lg font-extrabold text-white">${escapeHTML(c.name)}</h3>
+                            <p class="font-mono text-xs text-cyan-300">${escapeHTML(c.email)}</p>
+                            <p class="font-mono text-[11px] text-slate-400">Subscriber ID: #${escapeHTML(subId)}</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-extrabold ${
+                        c.status === 'Active' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40' :
+                        c.status === 'Suspended' ? 'bg-rose-500/20 text-rose-300 border border-rose-400/40' :
+                        'bg-slate-800 text-slate-300 border border-slate-700'
+                    }">${escapeHTML(c.status)}</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="p-3.5 rounded-2xl bg-space-950 border border-slate-800 space-y-1.5">
+                        <p class="text-[11px] font-bold text-cyan-300 uppercase">ব্যক্তিগত ও যোগাযোগ তথ্য</p>
+                        <p class="text-slate-300">মোবাইল: <span class="font-mono font-bold text-white">${escapeHTML(c.phone || '—')}</span></p>
+                        <p class="text-slate-300">ঠিকানা: <span class="text-white">${escapeHTML(c.address || '—')}</span></p>
+                        <p class="text-slate-300">সর্বশেষ লগইন: <span class="text-white">${escapeHTML(c.lastLogin || '—')}</span></p>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-space-950 border border-slate-800 space-y-1.5">
+                        <p class="text-[11px] font-bold text-emerald-300 uppercase">ডিভাইস ও প্যাকেজ অবস্থা</p>
+                        <p class="text-slate-300">ফোন মডেল: <span class="font-bold text-cyan-200">${escapeHTML(c.deviceModel || 'Unknown')}</span></p>
+                        <p class="text-slate-300">প্যাকেজ: <span class="font-bold text-cyber-glow">${c.pkgSpeed ? escapeHTML(c.pkgSpeed) + ' Mbps' : 'No Active Plan'}</span></p>
+                        <p class="text-slate-300">ব্যালেন্স: <span class="font-mono font-extrabold text-emerald-300">৳${escapeHTML(Number(c.balance || 0).toLocaleString())}</span> • তারিখ: <span class="font-mono text-white">${escapeHTML(c.expiry || 'N/A')}</span></p>
+                        <p class="text-slate-300">লাইভ সময়: <span data-live-countdown-cust="${escapeHTML(c.id)}" class="font-mono font-extrabold text-emerald-300">${c.status === 'Active' ? escapeHTML(formatLiveCountdownBN(Math.max(0, getCustomerExpiryTimestamp(c) - Date.now()))) : 'Inactive / 0 দিন'}</span></p>
+                    </div>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-space-950 border border-slate-800 space-y-2.5">
+                    <p class="text-[11px] font-bold text-amber-300 uppercase">এই ইউজারের আলাদা কন্ট্রোল প্যানেল</p>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="grantNetActivePermission('${escapeHTML(c.id)}')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyber-glow text-space-950 font-extrabold">Net Active অনুমতি</button>
+                        <button type="button" onclick="extendCustomer30Days('${escapeHTML(c.id)}')" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 font-bold">+30 দিন</button>
+                        <button type="button" onclick="reduceCustomer30Days('${escapeHTML(c.id)}')" class="px-3 py-1.5 rounded-xl bg-rose-500/20 text-rose-300 font-bold">-30 দিন</button>
+                        <button type="button" onclick="adjustCustomerDays('${escapeHTML(c.id)}', 1)" class="px-3 py-1.5 rounded-xl bg-cyan-500/20 text-cyan-300 font-bold">+1 দিন</button>
+                        <button type="button" onclick="adjustCustomerDays('${escapeHTML(c.id)}', -1)" class="px-3 py-1.5 rounded-xl bg-orange-500/20 text-orange-300 font-bold">-1 দিন</button>
+                        <button type="button" onclick="closeModal('modal-customer-detail'); openCustomExpiryModal('${escapeHTML(c.id)}')" class="px-3 py-1.5 rounded-xl bg-indigo-500/20 text-indigo-300 font-bold">কাস্টমাইজ</button>
+                        <button type="button" onclick="toggleCustState('${escapeHTML(c.id)}')" class="px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 font-bold">${c.status === 'Suspended' ? 'চালু করুন' : 'স্থগিত করুন'}</button>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <p class="text-[11px] font-bold text-slate-300 uppercase">এই ইউজারের পেমেন্ট হিস্ট্রি (${userPayments.length})</p>
+                    ${userPayments.length ? userPayments.map(p => `
+                        <div class="p-3 rounded-xl bg-space-950 border border-slate-800 flex items-center justify-between gap-2">
+                            <div>
+                                <p class="font-mono font-bold text-white">${escapeHTML(p.trxid)} <span class="text-cyan-300">(${escapeHTML(p.gateway)})</span></p>
+                                <p class="text-[11px] text-slate-400">${escapeHTML(p.speed)} Mbps • ৳${escapeHTML(p.amount)} • ${escapeHTML(p.date)}</p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                                p.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-300' :
+                                p.status === 'Rejected' ? 'bg-rose-500/20 text-rose-300' :
+                                'bg-amber-500/20 text-amber-300'
+                            }">${escapeHTML(p.status)}</span>
+                        </div>
+                    `).join('') : `<p class="text-slate-500 text-center py-3">এই ইউজারের কোনো পেমেন্ট রেকর্ড নেই।</p>`}
+                </div>
+
+                <div class="space-y-2">
+                    <p class="text-[11px] font-bold text-emerald-300 uppercase">এই ইউজারের সিকিউরিটি অডিট লগ (শুধু Admin প্যানেলে)</p>
+                    ${(() => {
+                        const uLogs = (appState.securityLogs || []).filter(l => (l.userEmail || '').toLowerCase() === (c.email || '').toLowerCase());
+                        if (!uLogs.length) return `<p class="text-slate-500 text-center py-3">এই ইউজারের কোনো সিকিউরিটি লগ নেই।</p>`;
+                        return uLogs.slice(0, 20).map(l => `
+                            <div class="p-2.5 rounded-xl bg-space-950 border border-slate-800 flex items-center justify-between gap-2">
+                                <div>
+                                    <p class="font-bold text-cyan-300">${escapeHTML(l.action)}</p>
+                                    <p class="font-mono text-[10px] text-slate-400">${escapeHTML(l.detail)}</p>
+                                </div>
+                                <span class="text-[10px] text-slate-500 shrink-0">${escapeHTML(l.time)}</span>
+                            </div>
+                        `).join('');
+                    })()}
+                </div>
+            `;
+            openModal('modal-customer-detail');
+        };
+
+        window.renderAdminCustomersTable = function () {
+            const q = (document.getElementById('admin-cust-search')?.value || '').toLowerCase();
+            const list = appState.customers.filter(c =>
+                (c.email || '').toLowerCase().includes(q) ||
+                (c.phone || '').includes(q) ||
+                (c.name || '').toLowerCase().includes(q) ||
+                (c.deviceModel || '').toLowerCase().includes(q)
+            );
+            const tbody = document.getElementById('admin-customers-body');
+            const cardsEl = document.getElementById('admin-customers-cards');
+
+            if (!list.length) {
+                if (cardsEl) cardsEl.innerHTML = `<div class="col-span-full py-6 text-center text-slate-500">কোনো নিবন্ধিত কাস্টমার বা ইউজার নেই (0)</div>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-500">কোনো নিবন্ধিত কাস্টমার নেই (0)</td></tr>`;
+                return;
+            }
+
+            if (cardsEl) {
+                cardsEl.innerHTML = list.map(c => {
+                    const userPayCount = appState.payments.filter(p => p.email === c.email).length;
+                    return `
+                        <div class="p-4 rounded-2xl bg-space-950/90 border border-slate-800 hover:border-cyber-cyan/45 space-y-3 flex flex-col justify-between">
+                            <div class="space-y-2">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <p class="font-extrabold text-white text-sm truncate">${escapeHTML(c.name)}</p>
+                                        <p class="font-mono text-[11px] text-cyan-300 truncate">${escapeHTML(c.email)}</p>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${
+                                        c.status === 'Active' ? 'bg-emerald-500/20 text-emerald-300' :
+                                        c.status === 'Suspended' ? 'bg-rose-500/20 text-rose-300' :
+                                        'bg-slate-800 text-slate-300'
+                                    }">${escapeHTML(c.status)}</span>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2 text-[11px] pt-1 border-t border-slate-800/80">
+                                    <div>
+                                        <span class="text-slate-400 block">প্যাকেজ</span>
+                                        <span class="font-bold text-cyber-glow">${c.pkgSpeed ? escapeHTML(c.pkgSpeed) + ' Mbps' : 'No Plan'}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-slate-400 block">ব্যালেন্স</span>
+                                        <span class="font-mono font-bold text-emerald-300">৳${escapeHTML(Number(c.balance || 0).toLocaleString())}</span>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <span class="text-slate-400 block">লাইভ সময় বাকি (৩০ দিন কাউন্টডাউন)</span>
+                                        <span data-live-countdown-cust="${escapeHTML(c.id)}" class="font-mono font-bold text-emerald-300 text-[11px]">${c.status === 'Active' ? escapeHTML(formatLiveCountdownBN(Math.max(0, getCustomerExpiryTimestamp(c) - Date.now()))) : 'Inactive / 0 দিন'}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-slate-400 block">পেমেন্ট</span>
+                                        <span class="font-bold text-slate-200">${userPayCount} টি</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-800/80">
+                                <button type="button" onclick="openIndividualCustomerDetail('${escapeHTML(c.id)}')" class="flex-1 py-2 px-3 rounded-xl bg-cyber-cyan/15 hover:bg-cyber-cyan/25 border border-cyber-cyan/35 text-cyan-200 font-extrabold text-[11px]">
+                                    <i class="fa-solid fa-sliders mr-1"></i> আলাদা ডিটেইলস ও কন্ট্রোল
+                                </button>
+                                <button type="button" onclick="grantNetActivePermission('${escapeHTML(c.id)}')" class="py-2 px-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-300 font-bold text-[11px]">
+                                    Net Active
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            tbody.innerHTML = list.map(c => `
+                <tr class="hover:bg-space-900/60">
+                    <td class="py-3 px-3">
+                        <p class="font-bold text-white text-sm">${escapeHTML(c.name)}</p>
+                        <p class="font-mono text-[11px] text-cyan-300">${escapeHTML(c.email)}</p>
+                        ${c.lastLogin ? `<p class="text-[10px] text-slate-500 mt-0.5">সর্বশেষ লগইন: ${escapeHTML(c.lastLogin)}</p>` : ''}
+                    </td>
+                    <td class="py-3 px-3">
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyan-200 font-semibold">
+                            <i class="fa-solid fa-mobile-screen-button text-cyber-glow"></i>
+                            <span>${escapeHTML(c.deviceModel || 'Unknown Device')}</span>
+                        </div>
+                        ${c.osInfo ? `<p class="text-[10px] text-slate-400 mt-1 font-mono">${escapeHTML(c.osInfo)}</p>` : ''}
+                    </td>
+                    <td class="py-3 px-3">
+                        <p class="font-mono text-slate-200">${escapeHTML(c.phone)}</p>
+                        <p class="text-[10px] text-slate-400">${escapeHTML(c.address || '—')}</p>
+                    </td>
+                    <td class="py-3 px-3">
+                        <p class="font-bold text-cyber-glow">${c.pkgSpeed ? escapeHTML(c.pkgSpeed) + ' Mbps (Active)' : (c.pendingPkgSpeed ? 'চাহিদা: ' + escapeHTML(c.pendingPkgSpeed) + ' Mbps' : 'No Plan')}</p>
+                        <p class="font-mono text-[11px] text-emerald-300 font-bold">ব্যালেন্স: ৳${escapeHTML(Number(c.balance || 0).toLocaleString())}</p>
+                        <p data-live-countdown-cust="${escapeHTML(c.id)}" class="font-mono text-[10px] font-bold text-emerald-300">${c.status === 'Active' ? escapeHTML(formatLiveCountdownBN(Math.max(0, getCustomerExpiryTimestamp(c) - Date.now()))) : 'অনুমতির অপেক্ষায়'}</p>
+                    </td>
+                    <td class="py-3 px-3">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            c.status === 'Active' ? 'bg-emerald-500/20 text-emerald-300' :
+                            c.status === 'Pending' ? 'bg-amber-500/20 text-amber-300' :
+                            'bg-slate-800 text-slate-300'
+                        }">${escapeHTML(c.status)}</span>
+                    </td>
+                    <td class="py-3 px-3 text-right whitespace-nowrap space-x-1">
+                        <button type="button" onclick="openIndividualCustomerDetail('${escapeHTML(c.id)}')" class="px-2.5 py-1 rounded bg-cyber-cyan/20 text-cyan-200 hover:bg-cyber-cyan/35 font-extrabold text-[10px]">বিস্তারিত</button>
+                        <button type="button" onclick="grantNetActivePermission('${escapeHTML(c.id)}')" class="px-2.5 py-1 rounded bg-gradient-to-r from-emerald-500 to-cyber-glow text-space-950 hover:brightness-110 font-extrabold text-[10px]">Net Active অনুমতি</button>
+                        <button type="button" onclick="extendCustomer30Days('${escapeHTML(c.id)}')" class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500 hover:text-space-950 font-bold text-[10px]">+30 দিন</button>
+                        <button type="button" onclick="reduceCustomer30Days('${escapeHTML(c.id)}')" class="px-2 py-1 rounded bg-rose-500/20 text-rose-300 hover:bg-rose-500 hover:text-white font-bold text-[10px]">-30 দিন</button>
+                        <button type="button" onclick="adjustCustomerDays('${escapeHTML(c.id)}', 1)" class="px-2 py-1 rounded bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500 hover:text-space-950 font-bold text-[10px]">+1 দিন</button>
+                        <button type="button" onclick="adjustCustomerDays('${escapeHTML(c.id)}', -1)" class="px-2 py-1 rounded bg-orange-500/20 text-orange-300 hover:bg-orange-500 hover:text-white font-bold text-[10px]">-1 দিন</button>
+                        <button type="button" onclick="openCustomExpiryModal('${escapeHTML(c.id)}')" class="px-2 py-1 rounded bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500 hover:text-white font-bold text-[10px]">কাস্টমাইজ</button>
+                        <button type="button" onclick="toggleCustState('${escapeHTML(c.id)}')" class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px]">${c.status === 'Suspended' ? 'চালু' : 'স্থগিত'}</button>
+                    </td>
+                </tr>
+            `).join('');
+        };
+
+        window.extendCustomer30Days = async function (id) {
+            const c = appState.customers.find(x => x.id === id);
+            if (!c) return;
+            const currentTs = getCustomerExpiryTimestamp(c);
+            const baseTs = currentTs > Date.now() ? currentTs : Date.now();
+            const newTs = baseTs + THIRTY_DAYS_MS;
+            c.expiryTimestamp = newTs;
+            c.expiry = new Date(newTs).toISOString().split('T')[0];
+            c.remainingDays = Math.ceil((newTs - Date.now()) / TWENTY_FOUR_HOURS_MS);
+            if (!c.pkgSpeed) c.pkgSpeed = 5;
+            c.status = 'Active';
+            logSecurityEvent('Extended +30 Days', `${c.email} -> ${c.expiry}`, c.email);
+            await saveState();
+            renderAdminDashboard();
+            showToast('মেয়াদ ৩০ দিন বাড়ানো হয়েছে।', 'success');
+        };
+
+        window.reduceCustomer30Days = async function (id) {
+            const c = appState.customers.find(x => x.id === id);
+            if (!c) return;
+            const currentTs = getCustomerExpiryTimestamp(c) || Date.now();
+            const newTs = currentTs - THIRTY_DAYS_MS;
+            c.expiryTimestamp = newTs;
+            c.expiry = new Date(newTs).toISOString().split('T')[0];
+            c.remainingDays = Math.max(0, Math.ceil((newTs - Date.now()) / TWENTY_FOUR_HOURS_MS));
+            if (!c.pkgSpeed) c.pkgSpeed = 5;
+            c.status = 'Active';
+            logSecurityEvent('Reduced -30 Days (Active)', `${c.email} -> ${c.expiry}`, c.email);
+            await saveState();
+            renderAdminDashboard();
+            showToast('শুধু ৩০ দিন কমানো হয়েছে (মেয়াদ চালু আছে)।', 'info');
+        };
+
+        window.adjustCustomerDays = async function (id, deltaDays) {
+            const c = appState.customers.find(x => x.id === id);
+            if (!c) return;
+            const currentTs = getCustomerExpiryTimestamp(c) || Date.now();
+            const newTs = currentTs + (Number(deltaDays) * TWENTY_FOUR_HOURS_MS);
+            c.expiryTimestamp = newTs;
+            c.expiry = new Date(newTs).toISOString().split('T')[0];
+            c.remainingDays = Math.max(0, Math.ceil((newTs - Date.now()) / TWENTY_FOUR_HOURS_MS));
+            if (!c.pkgSpeed) c.pkgSpeed = 5;
+            c.status = 'Active';
+            const sign = deltaDays >= 0 ? '+' : '';
+            logSecurityEvent(`Adjusted ${sign}${deltaDays} Days`, `${c.email} -> ${c.expiry}`, c.email);
+            await saveState();
+            renderAdminDashboard();
+            showToast(`${sign}${deltaDays} দিন অ্যাডজাস্ট করা হয়েছে।`, 'info');
+        };
+
+        let activeCustomExpiryCustomerId = null;
+
+        window.openCustomExpiryModal = function (id) {
+            const c = appState.customers.find(x => x.id === id);
+            if (!c) return;
+            activeCustomExpiryCustomerId = id;
+            document.getElementById('custom-expiry-customer-info').textContent = `${c.name} (${c.email})`;
+            document.getElementById('custom-expiry-date-input').value = c.expiry || new Date().toISOString().split('T')[0];
+            document.getElementById('custom-expiry-days-input').value = '';
+            const speedSel = document.getElementById('custom-pkg-speed-select');
+            const statusSel = document.getElementById('custom-status-select');
+            if (speedSel) speedSel.value = String(c.pkgSpeed || 5);
+            if (statusSel) statusSel.value = c.status || 'Active';
+            openModal('modal-custom-expiry');
+        };
+
+        window.applyCustomExpiryFromModal = async function (e) {
+            e.preventDefault();
+            if (!activeCustomExpiryCustomerId) return;
+            const c = appState.customers.find(x => x.id === activeCustomExpiryCustomerId);
+            if (!c) return;
+
+            const daysVal = document.getElementById('custom-expiry-days-input').value.trim();
+            const dateVal = document.getElementById('custom-expiry-date-input').value;
+            const speedSel = document.getElementById('custom-pkg-speed-select');
+            const statusSel = document.getElementById('custom-status-select');
+
+            if (daysVal !== '' && !Number.isNaN(Number(daysVal))) {
+                const newTs = Date.now() + (Number(daysVal) * TWENTY_FOUR_HOURS_MS);
+                c.expiryTimestamp = newTs;
+                c.expiry = new Date(newTs).toISOString().split('T')[0];
+                c.remainingDays = Math.max(0, Number(daysVal));
+            } else if (dateVal) {
+                const newTs = new Date(dateVal + 'T23:59:59').getTime();
+                c.expiryTimestamp = newTs;
+                c.expiry = dateVal;
+                c.remainingDays = Math.max(0, Math.ceil((newTs - Date.now()) / TWENTY_FOUR_HOURS_MS));
+            }
+
+            if (speedSel && Number(speedSel.value) > 0) {
+                c.pkgSpeed = Number(speedSel.value);
+            } else if (!c.pkgSpeed) {
+                c.pkgSpeed = 5;
+            }
+
+            if (statusSel && statusSel.value) {
+                c.status = statusSel.value;
+            } else {
+                c.status = 'Active';
+            }
+
+            logSecurityEvent('Custom Customer Updated', `${c.email} -> ${c.pkgSpeed}Mbps, ${c.expiry}, ${c.status}`, c.email);
+            await saveState();
+            closeModal('modal-custom-expiry');
+            renderAdminDashboard();
+            showToast(`কাস্টমাইজেশন সেভ হয়েছে (${c.expiry})!`, 'success');
+        };
+
+        window.toggleCustState = async function (id) {
+            const c = appState.customers.find(x => x.id === id);
+            if (!c) return;
+            c.status = c.status === 'Suspended' ? 'Active' : 'Suspended';
+            await saveState();
+            renderAdminDashboard();
+        };
+
+        function renderAdminSettingsTab() {
+            document.getElementById('edit-bkash-num').value = appState.owner.bkashNum || '01324214887';
+            document.getElementById('edit-nagad-num').value = appState.owner.nagadNum || '01324214887';
+            document.getElementById('edit-rocket-num').value = appState.owner.rocketNum || '013242148879';
+
+            const editor = document.getElementById('admin-packages-editor');
+            const sorted = [...appState.packages].sort((a, b) => Number(a.speed) - Number(b.speed));
+            editor.innerHTML = sorted.map(p => `
+                <div class="p-3.5 rounded-xl bg-space-950 border border-slate-800 space-y-2">
+                    <div class="font-display font-bold text-white">${escapeHTML(p.speed)} Mbps</div>
+                    <div class="flex gap-2">
+                        <input type="number" id="pkg-price-input-${escapeHTML(p.id)}" value="${escapeHTML(p.price)}" class="w-full px-3 py-1.5 rounded-lg bg-space-900 border border-slate-700 text-white">
+                        <button type="button" onclick="updatePkgPrice('${escapeHTML(p.id)}')" class="px-3 py-1.5 rounded-lg bg-cyber-glow text-space-950 font-bold shrink-0">সেভ</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.updatePkgPrice = async function (pkgId) {
+            const p = appState.packages.find(x => x.id === pkgId);
+            if (!p) return;
+            const val = Number(document.getElementById(`pkg-price-input-${pkgId}`).value);
+            if (val > 0) {
+                p.price = val;
+                await saveState();
+                showToast(`${p.speed} Mbps এর মূল্য ৳${val} সেভ হয়েছে।`, 'success');
+            }
+        };
+
+        window.saveAdminSettings = async function (e) {
+            e.preventDefault();
+            appState.owner.bkashNum = document.getElementById('edit-bkash-num').value.trim();
+            appState.owner.nagadNum = document.getElementById('edit-nagad-num').value.trim();
+            appState.owner.rocketNum = document.getElementById('edit-rocket-num').value.trim();
+
+            const newPass = document.getElementById('edit-admin-pass').value;
+            if (newPass && newPass.trim().length >= 6) {
+                appState.owner.passwordHash = await hashPasswordSHA256(newPass.trim());
+                document.getElementById('edit-admin-pass').value = '';
+                logSecurityEvent('Admin Password Changed', appState.owner.ownerName);
+            }
+
+            await saveState();
+            showToast('পেমেন্ট নম্বর ও সেটিংস আপডেট হয়েছে!', 'success');
+        };
+
+        function populateAdminLogUserFilter() {
+            const sel = document.getElementById('admin-log-user-filter');
+            if (!sel) return;
+            const prevVal = sel.value || 'ALL';
+            const emails = new Set();
+            (appState.customers || []).forEach(c => { if (c.email) emails.add(String(c.email).toLowerCase()); });
+            (appState.securityLogs || []).forEach(l => { if (l.userEmail) emails.add(String(l.userEmail).toLowerCase()); });
+
+            const options = ['<option value="ALL">সব ইউজার / সিস্টেম (' + (appState.securityLogs || []).length + ')</option>'];
+            Array.from(emails).sort().forEach(em => {
+                const cnt = (appState.securityLogs || []).filter(l => (l.userEmail || '').toLowerCase() === em).length;
+                options.push(`<option value="${escapeHTML(em)}">${escapeHTML(em)} (${cnt})</option>`);
+            });
+            sel.innerHTML = options.join('');
+            if (Array.from(sel.options).some(o => o.value === prevVal)) {
+                sel.value = prevVal;
+            }
+        }
+
+        function renderAdminSecurityLogs(forcedEmail = null) {
+            const box = document.getElementById('admin-audit-log-list');
+            if (!box) return;
+            populateAdminLogUserFilter();
+            const sel = document.getElementById('admin-log-user-filter');
+            const filterEmail = forcedEmail || (sel ? sel.value : 'ALL') || 'ALL';
+
+            const logs = (appState.securityLogs || []).filter(log => {
+                if (filterEmail === 'ALL') return true;
+                return String(log.userEmail || '').toLowerCase() === String(filterEmail).toLowerCase();
+            });
+
+            if (!logs.length) {
+                box.innerHTML = `<p class="text-slate-500">এই ইউজারের কোনো সিকিউরিটি লগ তৈরি হয়নি।</p>`;
+                return;
+            }
+            box.innerHTML = logs.slice(0, 50).map(log => `
+                <div class="p-2.5 rounded-xl bg-space-950 border border-slate-800 flex items-center justify-between gap-2">
+                    <div>
+                        <p class="font-bold text-cyan-300">${escapeHTML(log.action)} <span class="font-mono text-[10px] text-emerald-300">[${escapeHTML(log.userEmail || 'system')}]</span></p>
+                        <p class="font-mono text-[10px] text-slate-400">${escapeHTML(log.detail)}</p>
+                    </div>
+                    <span class="text-[10px] text-slate-500 shrink-0">${escapeHTML(log.time)}</span>
+                </div>
+            `).join('');
+        }
+
+        window.exportPortalBackup = function () {
+            const safeData = {
+                exportedAt: new Date().toISOString(),
+                packages: appState.packages,
+                customers: appState.customers,
+                payments: appState.payments
+            };
+            const blob = new Blob([JSON.stringify(safeData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `IOT_WiFi_Backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('নিরাপদ ব্যাকআপ ডাউনলোড হয়েছে!', 'success');
+        };
+
+        async function initSavedFirebase() {
+            const saved = localStorage.getItem(FB_CONFIG_KEY);
+            if (!saved) return;
+            document.getElementById('firebase-json-input').value = saved;
+            await activateFirebase(saved, false);
+        }
+
+        window.connectFirebaseFromInput = async function () {
+            const raw = document.getElementById('firebase-json-input').value.trim();
+            if (!raw) {
+                showToast('আগে firebaseConfig পেস্ট করুন।', 'error');
+                return;
+            }
+            await activateFirebase(raw, true);
+        };
+
+        async function activateFirebase(rawStr, pushLocal) {
+            try {
+                const normalized = rawStr
+                    .replace(/const\s+firebaseConfig\s*=\s*/i, '')
+                    .replace(/;+\s*$/, '')
+                    .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
+                    .replace(/'/g, '"');
+                const cfg = JSON.parse(normalized);
+
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(cfg);
+                }
+                db = firebase.firestore();
+                auth = firebase.auth();
+                isCloudSynced = true;
+                localStorage.setItem(FB_CONFIG_KEY, JSON.stringify(cfg, null, 2));
+
+                if (pushLocal) {
+                    await db.collection('iot_wifi_portal').doc('state').set(appState, { merge: true });
+                }
+
+                if (unsubSnapshot) unsubSnapshot();
+                unsubSnapshot = db.collection('iot_wifi_portal').doc('state').onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const cloudData = doc.data() || {};
+                        const base = createInitialState();
+                        const localOwner = appState.owner || {};
+                        const cloudOwner = cloudData.owner || {};
+                        const mergedOwner = {
+                            ...base.owner,
+                            ...cloudOwner,
+                            ...localOwner,
+                            setupDone: Boolean(localOwner.setupDone || cloudOwner.setupDone),
+                            ownerName: localOwner.ownerName || cloudOwner.ownerName || '',
+                            passwordHash: localOwner.passwordHash || cloudOwner.passwordHash || '',
+                            authorizedAdmins: (Array.isArray(localOwner.authorizedAdmins) && localOwner.authorizedAdmins.length)
+                                ? localOwner.authorizedAdmins
+                                : (Array.isArray(cloudOwner.authorizedAdmins) ? cloudOwner.authorizedAdmins : [])
+                        };
+                        const localLogs = Array.isArray(appState.securityLogs) ? appState.securityLogs : [];
+                        const cloudLogs = Array.isArray(cloudData.securityLogs) ? cloudData.securityLogs : [];
+                        const combinedLogs = [...localLogs, ...cloudLogs];
+                        const seenLogKeys = new Set();
+                        const mergedLogs = [];
+                        for (const item of combinedLogs) {
+                            if (!item) continue;
+                            const lKey = item.id || `${item.userEmail || ''}|${item.time || ''}|${item.action || ''}|${item.detail || ''}`;
+                            if (!seenLogKeys.has(lKey)) {
+                                seenLogKeys.add(lKey);
+                                mergedLogs.push({
+                                    ...item,
+                                    userEmail: String(item.userEmail || 'system').toLowerCase()
+                                });
+                            }
+                        }
+
+                        appState = {
+                            ...base,
+                            ...cloudData,
+                            owner: mergedOwner,
+                            securityLogs: mergedLogs.slice(0, 200)
+                        };
+                        try {
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+                        } catch (e) {}
+                        if (currentRoute === 'main') renderMainPanel();
+                        if (currentRoute === 'admin') renderAdminDashboard();
+                    }
+                });
+
+                updateCloudUI(true);
+            } catch (err) {
+                console.error(err);
+                showToast('firebaseConfig ফরম্যাট সঠিক নয়।', 'error');
+            }
+        }
+
+        window.disconnectFirebase = function () {
+            if (unsubSnapshot) unsubSnapshot();
+            isCloudSynced = false;
+            localStorage.removeItem(FB_CONFIG_KEY);
+            document.getElementById('firebase-json-input').value = '';
+            updateCloudUI(false);
+            showToast('Local Vault মোডে ফিরে যাওয়া হয়েছে।', 'info');
+        };
+
+        function updateCloudUI(active) {
+            const pill = document.getElementById('cloud-status-pill');
+            const fbStatus = document.getElementById('admin-fb-status');
+            const modalOauthBtn = document.getElementById('modal-google-oauth-btn');
+
+            if (active) {
+                pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Firebase Live';
+                pill.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 border border-emerald-400/40 text-emerald-300';
+                if (fbStatus) fbStatus.textContent = 'Connected (Firestore Live)';
+                if (modalOauthBtn) modalOauthBtn.classList.remove('hidden');
+            } else {
+                pill.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Local Vault';
+                pill.className = 'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-500/10 border border-cyber-cyan/30 text-cyan-300';
+                if (fbStatus) fbStatus.textContent = 'Local Vault Active';
+                if (modalOauthBtn) modalOauthBtn.classList.add('hidden');
+            }
+        }
+
+        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
+        window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
+
+        window.copyText = function (text, message) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => showToast(message, 'success')).catch(() => fallbackCopy(text, message));
+            } else {
+                fallbackCopy(text, message);
+            }
+        };
+
+        function fallbackCopy(text, message) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast(message, 'success');
+        }
+
+        function showToast(msg, type = 'success') {
+            const box = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            const style = type === 'error'
+                ? 'bg-rose-950/95 border-rose-500 text-rose-200'
+                : type === 'info'
+                ? 'bg-space-900/95 border-cyber-glow text-cyan-200'
+                : 'bg-emerald-950/95 border-emerald-400 text-emerald-200';
+            el.className = `pointer-events-auto px-4 py-3 rounded-xl border shadow-cyber text-xs font-semibold transition-opacity duration-300 ${style}`;
+            el.textContent = msg;
+            box.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 300);
+            }, 3400);
+        }
+
+        const DEFAULT_IOT_WIFI_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDW3JIE23p6SsSXaClroKsss4LrRPErM_Q",
+            authDomain: "iot-wifi-360.firebaseapp.com",
+            databaseURL: "https://iot-wifi-360-default-rtdb.firebaseio.com",
+            projectId: "iot-wifi-360",
+            storageBucket: "iot-wifi-360.firebasestorage.app",
+            messagingSenderId: "532995837518",
+            appId: "1:532995837518:web:7c0375d180d89fdbbebd1f",
+            measurementId: "G-LS5GEJ23K9"
+        };
+
+        async function autoConnectDefaultFirebase() {
+            try {
+                if (!localStorage.getItem(FB_CONFIG_KEY)) {
+                    localStorage.setItem(FB_CONFIG_KEY, JSON.stringify(DEFAULT_IOT_WIFI_FIREBASE_CONFIG, null, 2));
+                }
+                const inputEl = document.getElementById('firebase-json-input');
+                if (inputEl && !inputEl.value.trim()) {
+                    inputEl.value = JSON.stringify(DEFAULT_IOT_WIFI_FIREBASE_CONFIG, null, 2);
+                }
+                await activateFirebase(JSON.stringify(DEFAULT_IOT_WIFI_FIREBASE_CONFIG), false);
+            } catch (err) {
+                console.error('Auto Firebase connect error:', err);
+            }
+        }
+
+        window.onload = async function () {
+            initPWAAppConfig();
+            renderRoute();
+            await initSavedFirebase();
+            if (!isCloudSynced) {
+                await autoConnectDefaultFirebase();
+            }
+            await process24HourDayCounters();
+            updateAllLiveCountdowns();
+            setInterval(() => {
+                updateAllLiveCountdowns();
+            }, 1000);
+            setInterval(() => {
+                process24HourDayCounters();
+            }, 60 * 1000);
+        };
+    </script>
+</body>
+</html>
